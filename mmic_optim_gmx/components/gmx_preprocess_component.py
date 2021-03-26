@@ -46,7 +46,19 @@ class GmxPreProcessComponent(SpecificComponent):
         mols.to_file(pdb_fname)
         
         mdp_fname = "em.mdp"
-        
+        mdp_inputs = {"integrator":inputs.method, 
+                      "emtol":inouts.tol,
+                      "emstep":inputs.step_size,
+                      "nsteps":inputs.max_steps,
+                      "pbc":inputs.boundary
+                     }
+        str = " "
+        with open(pdb_fname, 'w') as inp:
+            for i in range(0,len(list(list(mdp_inputs.items())))):
+                par = list(list(mdp_input.items())[i])
+                inp.write(str.join(par+"\n")
+                          
+            
         # Parse GMX input params from inputs and create GmxComputeInput object
         gmx_compute = GmxComputeInput(
             proc_input=inputs,
@@ -63,6 +75,9 @@ class GmxPreProcessComponent(SpecificComponent):
         config: Optional["TaskConfig"] = None,
         template: Optional[str] = None,
     ) -> Dict[str, Any]:
-        
+        """
+        Build the input for pdb2gmx command to produce .top file
+        """
+                      
         assert inputs["engine"] == "gmx", "Engine must be gmx (Gromacs)!"
         
