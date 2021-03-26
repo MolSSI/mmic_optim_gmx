@@ -8,3 +8,4 @@ class GmxComputeInput(ProcInput):
     proc_input: OptimInput = Field(..., description="Procedure input schema.")
     mdp_file: str = Field(..., description="The file used for specifying the parameters. Should be a .mdp file.")
     struct_file: str = Field(..., description="The file of the system structure. Should be a .top file.")
+    integrator: str = Field(..., description="The algorithm used to implement energy minimization.")
