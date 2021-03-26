@@ -42,9 +42,27 @@ class GmxPreProcessComponent(SpecificComponent):
         
         mols = inputs.molecule #Dict[str, Molecule]
         
-        fname = "GMX_pre.pdb"
-        mols.to_file(fname)
+        pdb_fname = "GMX_pre.pdb"
+        mols.to_file(pdb_fname)
+        
+        mdp_fname = "em.mdp"
         
         # Parse GMX input params from inputs and create GmxComputeInput object
-        gmx_compute = GmxComputeInput(inputs=..., ...)
+        gmx_compute = GmxComputeInput(
+            proc_input=inputs,
+            mdp_file=...,
+            struct_file=...
+        )
+                      
         return True, GmxComputeInput(**gmx_compute)
+    
+    def build_input(
+        self,
+        inputs: Dict[str, Any],
+        pdb_fname: str,
+        config: Optional["TaskConfig"] = None,
+        template: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        
+        assert inputs["engine"] == "gmx", "Engine must be gmx (Gromacs)!"
+        
