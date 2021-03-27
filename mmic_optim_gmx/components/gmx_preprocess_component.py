@@ -52,7 +52,13 @@ class GmxPreProcessComponent(SpecificComponent):
                       "nsteps":inputs.max_steps,
                       "pbc":inputs.boundary
                      }
-        str = " "
+        
+        if (mdp_inputs["integrator"] == None) : mdp_inputs["integrator"] = "steep"
+        if (mdp_inputs["emtol"] == None) : mdp_inputs["emtol"] = "1000"
+        if (mdp_inputs["emstep"] == None) : mdp_inputs["emstep"] = "0.01" #The unit here is nm
+        if (mdp_inputs["emstep"] == None) : mdp_inputs["emstep"] = "0.01"
+            
+        str = " = "
         with open(pdb_fname, 'w') as inp:
             for i in range(0,len(list(list(mdp_inputs.items())))):
                 par = list(list(mdp_input.items())[i])
