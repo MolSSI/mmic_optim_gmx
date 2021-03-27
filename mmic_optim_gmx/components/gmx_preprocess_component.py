@@ -94,6 +94,7 @@ class GmxPreProcessComponent(SpecificComponent):
     def build_input(
         self,
         inputs: Dict[str, Any],
+        pdb_fname: str,
         config: Optional["TaskConfig"] = None,
         template: Optional[str] = None,
     ) -> Dict[str, Any]:
@@ -103,3 +104,16 @@ class GmxPreProcessComponent(SpecificComponent):
                       
         assert inputs["engine"] == "gmx", "Engine must be gmx (Gromacs)!"
         
+        with FileOutput(path=pdb_fname) as fp:                       
+            pdb_fpath = fp.abs_path
+         
+        #Is this part necessary?
+        env = os.environ.copy()
+
+        if config:
+            env["MKL_NUM_THREADS"] = str(config.ncores)
+            env["OMP_NUM_THREADS"] = str(config.ncores)
+
+        scratch_directory = config.scratch_directory if config else None
+                        
+        return
