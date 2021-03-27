@@ -57,6 +57,17 @@ class GmxPreProcessComponent(SpecificComponent):
         if (mdp_inputs["emtol"] == None) : mdp_inputs["emtol"] = "1000"
         if (mdp_inputs["emstep"] == None) : mdp_inputs["emstep"] = "0.01" #The unit here is nm
         if (mdp_inputs["emstep"] == None) : mdp_inputs["emstep"] = "0.01"
+        
+        #Translate boundary str tuple to a string e.g. xy
+        pbc_dict = dict(zip(["x","y","z"],list(mdp_inputs["pbc"])))
+        
+        for dim in list(pbc_dict.keys()):
+            if pbc_dict[dim] != "periodic":
+                del pbc_dict[dim]
+            else:
+                pbc = pbc + dim
+                
+        mdp_inputs["pbc"] = pbc
             
         str = " = "
         with open(pdb_fname, 'w') as inp:
