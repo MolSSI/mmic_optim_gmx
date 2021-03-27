@@ -80,13 +80,18 @@ class GmxPreProcessComponent(SpecificComponent):
                 inp.write(str.join(par+"\n")
                           
         #build pdb2gmx inputs
-        input_model =  {"pdb_fname":pdb_fname, "ff_fname":ff_fname
+        fs = inputs.forcefield
+        ff_name, ff = list(fs.items()).pop()
+        input_model =  {"pdb_fname":pdb_fname, "ff_name":ff_name, "engine":"gmx"}
+                          
+        cmd_input = self.build_input(input_model)
+        CmdComponent.compute(cmd_input)                  
             
         # Parse GMX input params from inputs and create GmxComputeInput object
         gmx_compute = GmxComputeInput(
             proc_input=inputs,
-            mdp_file=...,
-            struct_file=...
+            mdp_file=mdp_fname,
+            struct_file="topol.top"
         )
                       
         return True, GmxComputeInput(**gmx_compute)
@@ -102,7 +107,7 @@ class GmxPreProcessComponent(SpecificComponent):
         Build the input for pdb2gmx command to produce .top file
         """
                       
-        assert inputs["engine"] == "gmx", "Engine must be gmx (Gromacs)!"
+        #assert inputs["engine"] == "gmx", "Engine must be gmx (Gromacs)!"
         
         with FileOutput(path=pdb_fname) as fp:                       
             pdb_fpath = fp.abs_path
@@ -116,4 +121,20 @@ class GmxPreProcessComponent(SpecificComponent):
 
         scratch_directory = config.scratch_directory if config else None
                         
-        return
+        return {
+            "command": [
+                inputs["engine"],
+                "pdb2gmx",
+                "-f",
+                pdb_fpath,
+                "-ff",
+                inputs["ff_name"],
+                "-water",
+                "none",
+            ],
+            "infiles": [pdb_fpath],
+            "outfiles": ["conf.gro", "topol.top", "posre.itp"],
+            "scratch_directory": scratch_directory,
+            "environment": env,
+        }
+
