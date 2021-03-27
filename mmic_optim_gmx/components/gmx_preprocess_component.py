@@ -41,9 +41,12 @@ class GmxPreProcessComponent(SpecificComponent):
             inputs = self.input()(**inputs)
         
         mols = inputs.molecule #Dict[str, Molecule]
-        
         pdb_fname = "GMX_pre.pdb"
-        mols.to_file(pdb_fname)
+        
+        for mol_name in mols.keys():
+            mols[mol_name].to_file(file_name = pdb_fname,
+                                   mode = "a"
+                                  )#Molecule.to_file. Mode is "a" to add to the end of pdb file
         
         mdp_fname = "em.mdp"
         mdp_inputs = {"integrator":inputs.method, 
@@ -63,18 +66,21 @@ class GmxPreProcessComponent(SpecificComponent):
         
         for dim in list(pbc_dict.keys()):
             if pbc_dict[dim] != "periodic":
-                del pbc_dict[dim]
+                continue
             else:
                 pbc = pbc + dim
                 
         mdp_inputs["pbc"] = pbc
-            
+         
+        #Write .mdp file
         str = " = "
         with open(pdb_fname, 'w') as inp:
             for i in range(0,len(list(list(mdp_inputs.items())))):
                 par = list(list(mdp_input.items())[i])
                 inp.write(str.join(par+"\n")
                           
+        #build pdb2gmx inputs
+        input_model =  {"pdb_fname":pdb_fname, "ff_fname":ff_fname
             
         # Parse GMX input params from inputs and create GmxComputeInput object
         gmx_compute = GmxComputeInput(
@@ -88,7 +94,6 @@ class GmxPreProcessComponent(SpecificComponent):
     def build_input(
         self,
         inputs: Dict[str, Any],
-        pdb_fname: str,
         config: Optional["TaskConfig"] = None,
         template: Optional[str] = None,
     ) -> Dict[str, Any]:
