@@ -92,6 +92,7 @@ class GmxPreProcessComponent(SpecificComponent):
             proc_input=inputs,
             mdp_file=mdp_fname,
             struct_file="topol.top"
+            coord_file="conf.gro"
         )
                       
         return True, GmxComputeInput(**gmx_compute)
