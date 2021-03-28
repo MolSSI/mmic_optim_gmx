@@ -33,7 +33,7 @@ class PostComponent(SpecificComponent):
             inputs = self.input()(**inputs)
         
         mdp_fname, gro_fname, top_fname = inputs.mdp_file, inputs.coord_file, inputs.struct_file
-        
+        tpr_fname = "em.tpr"
         assert os.path.exists('mdp_fname'), "No mdp file found"
         assert os.path.exists('gro_fname'), "No gro file found"
         assert os.path.exists('top_fname'), "No top file found"
@@ -46,9 +46,24 @@ class PostComponent(SpecificComponent):
                        "gro_fname":gro_fname,
                        "top_fname":top_fname,
                        "engine":inputs.proc_input.engine,
+                       "tpr_fname":tpr_fname
                        }
         
-        cmd_input_grompp = 
+        cmd_input_grompp = self.build_input(input_model)
+        CmdComponent.compute(cmd_input_grompp)
+        
+        cmd_input_mdrun ={
+            "command": [
+                inputs.proc_input.engine,
+                "mdrun",
+                "-s",
+                tpr_fname,
+                "-deffnm",
+                "em"
+            ],
+            "outfiles": ["em.trr","em.gro"]
+        }
+        CmdComponent.compute(cmd_input_mdrun)
         
         return True, GmxComputeOutput(
             proc_input=inputs.proc_input,
@@ -66,7 +81,7 @@ class PostComponent(SpecificComponent):
         Build the input for grompp 
         """
         
-        tpr_fname = "em.tpr"
+        tpr_fname = inputs["tpr_fname"]
         
         #Is this part necessary?
         env = os.environ.copy()
