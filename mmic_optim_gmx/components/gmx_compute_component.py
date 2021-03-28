@@ -34,13 +34,22 @@ class PostComponent(SpecificComponent):
         
         mdp_fname, gro_fname, top_fname = inputs.mdp_file, inputs.coord_file, inputs.struct_file
         
-        assert os.path.exists('./mdp_fname'), "No mdp file found"
-        assert os.path.exists('./gro_fname'), "No gro file found"
-        assert os.path.exists('./top_fname'), "No top file found"
+        assert os.path.exists('mdp_fname'), "No mdp file found"
+        assert os.path.exists('gro_fname'), "No gro file found"
+        assert os.path.exists('top_fname'), "No top file found"
         
-        mol = ...  # path to output structure file, minimized
-        traj = ...  # path to output traj file
-
+       # mol = os.path.abspath('mdp_fname') + "/minimized_struct"  # path to output structure file, minimized
+       # traj = os.path.abspath('mdp_fname') + "/traj"  # path to output traj file
+       # Is Gromacs able to output files to specific locations?
+        
+        input_model = {"mdp_fname":pdb_fname,
+                       "gro_fname":gro_fname,
+                       "top_fname":top_fname,
+                       "engine":inputs.proc_input.engine,
+                       }
+        
+        cmd_input_grompp = 
+        
         return True, GmxComputeOutput(
             proc_input=inputs.proc_input,
             molecule=mol,
@@ -53,4 +62,35 @@ class PostComponent(SpecificComponent):
         config: Optional["TaskConfig"] = None,
         template: Optional[str] = None,
     ) -> Dict[str, Any]:
+        """
+        Build the input for grompp 
+        """
         
+        tpr_fname = "em.tpr"
+        
+        #Is this part necessary?
+        env = os.environ.copy()
+
+        if config:
+            env["MKL_NUM_THREADS"] = str(config.ncores)
+            env["OMP_NUM_THREADS"] = str(config.ncores)
+
+        scratch_directory = config.scratch_directory if config else None
+                        
+        return {
+            "command": [
+                inputs["engine"],
+                "grompp",
+                "-v -f",
+                mdp_fpath,
+                "-c",
+                inputs["gro_fname"],
+                "-p",
+                inputs["top_fname"],
+                "-o",
+                tpr_fname
+            ],
+            "outfiles": [tpr_fname],
+            "scratch_directory": scratch_directory,
+            "environment": env,
+        }        
