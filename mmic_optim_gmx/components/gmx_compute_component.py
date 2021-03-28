@@ -7,6 +7,7 @@ from ..models import GmxComputeInput, GmxComputeOutput
 from mmic.components.blueprints import SpecificComponent
 
 from typing import Dict, Any, List, Tuple, Optional
+import os
 
 
 class PostComponent(SpecificComponent):
@@ -28,7 +29,15 @@ class PostComponent(SpecificComponent):
     ) -> Tuple[bool, GmxComputeOutput]:
 
         # Call gmx pdb2gmx, mdrun, etc. here
-
+        if isinstance(inputs, dict):
+            inputs = self.input()(**inputs)
+        
+        mdp_fname, gro_fname, top_fname = inputs.mdp_file, inputs.coord_file, inputs.struct_file
+        
+        assert os.path.exists('./mdp_fname'), "No mdp file found"
+        assert os.path.exists('./gro_fname'), "No gro file found"
+        assert os.path.exists('./top_fname'), "No top file found"
+        
         mol = ...  # path to output structure file, minimized
         traj = ...  # path to output traj file
 
@@ -37,3 +46,11 @@ class PostComponent(SpecificComponent):
             molecule=mol,
             trajectory=traj,
         )
+    
+    def build_input(
+        self,
+        inputs: Dict[str, Any],
+        config: Optional["TaskConfig"] = None,
+        template: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        
