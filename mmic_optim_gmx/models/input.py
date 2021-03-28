@@ -9,4 +9,4 @@ class GmxComputeInput(ProcInput):
     proc_input: OptimInput = Field(..., description="Procedure input schema.")
     mdp_file: str = Field(..., description="The file used for specifying the parameters. Should be a .mdp file.")
     struct_file: str = Field(..., description="The file of the system structure. Should be a .top file.")
-   
+    coord_file: str = Field(..., description="The file of the coordinates of the atoms in the system. Should be a .gro file.")
