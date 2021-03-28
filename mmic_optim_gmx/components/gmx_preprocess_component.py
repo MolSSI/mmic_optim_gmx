@@ -82,7 +82,7 @@ class GmxPreProcessComponent(SpecificComponent):
         #build pdb2gmx inputs
         fs = inputs.forcefield
         ff_name, ff = list(fs.items()).pop()
-        input_model =  {"pdb_fname":pdb_fname, "ff_name":ff_name, "engine":"gmx"}
+        input_model =  {"pdb_fname":pdb_fname, "ff_name":ff_name, "engine":inputs.proc_input.engine}
                           
         cmd_input = self.build_input(input_model)
         CmdComponent.compute(cmd_input)                  
@@ -108,7 +108,7 @@ class GmxPreProcessComponent(SpecificComponent):
         Build the input for pdb2gmx command to produce .top file
         """
                       
-        #assert inputs["engine"] == "gmx", "Engine must be gmx (Gromacs)!"
+        assert inputs["engine"] == "gmx", "Engine must be gmx (Gromacs)!"
         
         with FileOutput(path=pdb_fname) as fp:                       
             pdb_fpath = fp.abs_path
