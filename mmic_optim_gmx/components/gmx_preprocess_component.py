@@ -61,23 +61,21 @@ class GmxPreProcessComponent(SpecificComponent):
         if (mdp_inputs["emstep"] == None) : mdp_inputs["emstep"] = "0.01" #The unit here is nm
         if (mdp_inputs["emstep"] == None) : mdp_inputs["emstep"] = "0.01"
         
-        #Translate boundary str tuple to a string e.g. xy
+        #Translate boundary str tuple (perodic,perodic,perodic) to a string e.g. xyz
         pbc_dict = dict(zip(["x","y","z"],list(mdp_inputs["pbc"])))
         
         for dim in list(pbc_dict.keys()):
             if pbc_dict[dim] != "periodic":
                 continue
             else:
-                pbc = pbc + dim
-                
+                pbc = pbc + dim          
         mdp_inputs["pbc"] = pbc
          
         #Write .mdp file
         str = " = "
         with open(pdb_fname, 'w') as inp:
-            for i in range(0,len(list(list(mdp_inputs.items())))):
-                par = list(list(mdp_input.items())[i])
-                inp.write(str.join(par+"\n")
+            for key, val in mdp_inputs.items():
+                inp.write(f"{key} = {val}\n")
                           
         #build pdb2gmx inputs
         fs = inputs.forcefield
