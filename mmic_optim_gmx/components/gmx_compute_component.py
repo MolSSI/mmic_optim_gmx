@@ -75,6 +75,8 @@ class PostComponent(SpecificComponent):
         clean_files = [mdp_fname, gro_fname, tpr_fname]
         self.cleanup(clean_files)
 
+        mol = os.path.abspath("em.gro")
+
         return True, GmxComputeOutput(
             proc_input=inputs.proc_input,
             molecule=mol,

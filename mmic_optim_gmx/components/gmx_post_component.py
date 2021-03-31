@@ -39,7 +39,8 @@ class PostComponent(SpecificComponent):
         mol_file = inputs.molecule  # split mols into multiple files
         mols_files = ...
         mol = {
-            key: Molecule.from_file(mols_files[key]) for key in inputs.proc_input.mol
+            key: Molecule.from_file(mols_files[key]) 
+            for key in inputs.proc_input.mol
         }
 
-        return True, OptimOutput(procInput=inputs.input, molecule=mol, trajectory=traj)
+        return True, OptimOutput(proc_input=inputs.proc_input, molecule=mol, trajectory=traj)

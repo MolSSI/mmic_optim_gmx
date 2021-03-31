@@ -105,7 +105,7 @@ class GmxPreProcessComponent(SpecificComponent):
         os.remove(pdb_fname)
 
         gmx_compute = GmxComputeInput(
-            proc_input=inputs,
+            proc_input=inputs.proc_input,
             mdp_file=mdp_fname,
             struct_file=top_fname,
             coord_file=gro_fname,
