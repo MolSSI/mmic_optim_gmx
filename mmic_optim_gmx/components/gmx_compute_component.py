@@ -31,46 +31,64 @@ class PostComponent(SpecificComponent):
         # Call gmx pdb2gmx, mdrun, etc. here
         if isinstance(inputs, dict):
             inputs = self.input()(**inputs)
-        
-        mdp_fname, gro_fname, top_fname = inputs.mdp_file, inputs.coord_file, inputs.struct_file
+
+        mdp_fname, gro_fname, top_fname = (
+            inputs.mdp_file,
+            inputs.coord_file,
+            inputs.struct_file,
+        )
         tpr_fname = "em.tpr"
-        assert os.path.exists('mdp_fname'), "No mdp file found"
-        assert os.path.exists('gro_fname'), "No gro file found"
-        assert os.path.exists('top_fname'), "No top file found"
-        
-       # mol = os.path.abspath('mdp_fname') + "/minimized_struct"  # path to output structure file, minimized
-       # traj = os.path.abspath('mdp_fname') + "/traj"  # path to output traj file
-       # Is Gromacs able to output files to specific locations?
-        
-        input_model = {"mdp_fname":pdb_fname,
-                       "gro_fname":gro_fname,
-                       "top_fname":top_fname,
-                       "engine":inputs.proc_input.engine,
-                       "tpr_fname":tpr_fname
-                       }
-        
+        assert os.path.exists("mdp_fname"), "No .mdp file found"
+        assert os.path.exists("gro_fname"), "No .gro file found"
+        assert os.path.exists("top_fname"), "No .top file found"
+
+        # mol = os.path.abspath('mdp_fname') + "/minimized_struct"  # path to output structure file, minimized
+        # traj = os.path.abspath('mdp_fname') + "/traj"  # path to output traj file
+        # Is Gromacs able to output files to specific locations?
+
+        input_model = {
+            "mdp_fname": mdp_fname,
+            "gro_fname": gro_fname,
+            "top_fname": top_fname,
+            "engine": inputs.proc_input.engine,
+            "tpr_fname": tpr_fname,
+        }
+
         cmd_input_grompp = self.build_input(input_model)
         CmdComponent.compute(cmd_input_grompp)
-        
-        cmd_input_mdrun ={
+
+        tpr_fname = os.path.abspath(tpr_fname)
+
+        cmd_input_mdrun = {
             "command": [
                 inputs.proc_input.engine,
                 "mdrun",
                 "-s",
                 tpr_fname,
                 "-deffnm",
-                "em"
+                "em",
             ],
-            "outfiles": ["em.trr","em.gro"]
+            "outfiles": ["em.trr", "em.gro"],
         }
         CmdComponent.compute(cmd_input_mdrun)
-        
+
+        clean_files = [mdp_fname, gro_fname, tpr_fname]
+        self.cleanup(clean_files)
+
         return True, GmxComputeOutput(
             proc_input=inputs.proc_input,
             molecule=mol,
             trajectory=traj,
         )
-    
+
+    @staticmethod
+    def cleanup(remove: List[str]):
+        for item in remove:
+            if os.path.isdir(item):
+                shutil.rmtree(item)
+            elif os.path.isfile(item):
+                os.remove(item)
+
     def build_input(
         self,
         inputs: Dict[str, Any],
@@ -78,12 +96,12 @@ class PostComponent(SpecificComponent):
         template: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
-        Build the input for grompp 
+        Build the input for grompp
         """
-        
+
         tpr_fname = inputs["tpr_fname"]
-        
-        #Is this part necessary?
+
+        # Is this part necessary?
         env = os.environ.copy()
 
         if config:
@@ -91,21 +109,21 @@ class PostComponent(SpecificComponent):
             env["OMP_NUM_THREADS"] = str(config.ncores)
 
         scratch_directory = config.scratch_directory if config else None
-                        
+
         return {
             "command": [
                 inputs["engine"],
                 "grompp",
                 "-v -f",
-                mdp_fpath,
+                inouts["mdp_fname"],
                 "-c",
                 inputs["gro_fname"],
                 "-p",
                 inputs["top_fname"],
                 "-o",
-                tpr_fname
+                tpr_fname,
             ],
             "outfiles": [tpr_fname],
             "scratch_directory": scratch_directory,
             "environment": env,
-        }        
+        }
