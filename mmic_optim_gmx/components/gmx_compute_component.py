@@ -72,10 +72,11 @@ class PostComponent(SpecificComponent):
         }
         CmdComponent.compute(cmd_input_mdrun)
 
-        clean_files = [mdp_fname, gro_fname, tpr_fname]
+        clean_files = [mdp_fname, gro_fname, tpr_fname, "mdout.mdp"]
         self.cleanup(clean_files)
 
         mol = os.path.abspath("em.gro")
+        traj = os.path.abspath("em.trr")
 
         return True, GmxComputeOutput(
             proc_input=inputs.proc_input,
