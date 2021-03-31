@@ -36,65 +36,83 @@ class GmxPreProcessComponent(SpecificComponent):
         scratch_name: Optional[str] = None,
         timeout: Optional[int] = None,
     ) -> Tuple[bool, GmxComputeInput]:
-        
+
         if isinstance(inputs, dict):
             inputs = self.input()(**inputs)
-        
-        mols = inputs.molecule #Dict[str, Molecule]
+
+        mols = inputs.molecule  # Dict[str, Molecule]
         pdb_fname = "GMX_pre.pdb"
-        
+
+        # Write the .pdb file
         for mol_name in mols.keys():
-            mols[mol_name].to_file(file_name = pdb_fname,
-                                   mode = "a"
-                                  )#Molecule.to_file. Mode is "a" to add to the end of pdb file
-        
+            mols[mol_name].to_file(
+                file_name=pdb_fname, mode="a"
+            )  # Molecule.to_file. Mode is "a" to add to the end of pdb file
+
         mdp_fname = "em.mdp"
-        mdp_inputs = {"integrator":inputs.method, 
-                      "emtol":inouts.tol,
-                      "emstep":inputs.step_size,
-                      "nsteps":inputs.max_steps,
-                      "pbc":inputs.boundary
-                     }
-        
-        if (mdp_inputs["integrator"] == None) : mdp_inputs["integrator"] = "steep"
-        if (mdp_inputs["emtol"] == None) : mdp_inputs["emtol"] = "1000"
-        if (mdp_inputs["emstep"] == None) : mdp_inputs["emstep"] = "0.01" #The unit here is nm
-        if (mdp_inputs["emstep"] == None) : mdp_inputs["emstep"] = "0.01"
-        
-        #Translate boundary str tuple (perodic,perodic,perodic) to a string e.g. xyz
-        pbc_dict = dict(zip(["x","y","z"],list(mdp_inputs["pbc"])))
-        
+        mdp_inputs = {
+            "integrator": inputs.method,
+            "emtol": inouts.tol,
+            "emstep": inputs.step_size,
+            "nsteps": inputs.max_steps,
+            "pbc": inputs.boundary,
+        }
+
+        if mdp_inputs["integrator"] == None:
+            mdp_inputs["integrator"] = "steep"
+        if mdp_inputs["emtol"] == None:
+            mdp_inputs["emtol"] = "1000"
+        if mdp_inputs["emstep"] == None:
+            mdp_inputs["emstep"] = "0.01"  # The unit here is nm
+        if mdp_inputs["emstep"] == None:
+            mdp_inputs["emstep"] = "0.01"
+
+        # Translate boundary str tuple (perodic,perodic,perodic) to a string e.g. xyz
+        pbc_dict = dict(zip(["x", "y", "z"], list(mdp_inputs["pbc"])))
+
         for dim in list(pbc_dict.keys()):
             if pbc_dict[dim] != "periodic":
                 continue
             else:
-                pbc = pbc + dim          
+                pbc = pbc + dim
         mdp_inputs["pbc"] = pbc
-         
-        #Write .mdp file
+
+        # Write .mdp file
         str = " = "
-        with open(pdb_fname, 'w') as inp:
+        with open(mdp_fname, "w") as inp:
             for key, val in mdp_inputs.items():
                 inp.write(f"{key} = {val}\n")
-                          
-        #build pdb2gmx inputs
+
+        # Get the abspath of .pdbb and .mdp files
+        pdb_fname = os.path.abspath(pdb_fname)
+        mdp_fname = os.path.abspath(mdp_fname)
+
+        # build pdb2gmx inputs
         fs = inputs.forcefield
         ff_name, ff = list(fs.items()).pop()
-        input_model =  {"pdb_fname":pdb_fname, "ff_name":ff_name, "engine":inputs.proc_input.engine}
-                          
+        input_model = {
+            "pdb_fname": pdb_fname,
+            "ff_name": ff_name,
+            "engine": inputs.proc_input.engine,
+        }
+
         cmd_input = self.build_input(input_model)
-        CmdComponent.compute(cmd_input)                  
-            
-        # Parse GMX input params from inputs and create GmxComputeInput object
+        CmdComponent.compute(cmd_input)
+
+        top_fname = os.path.abspath("topol.top")
+        gro_fname = os.path.abspath("conf.gro")
+
+        os.remove(pdb_fname)
+
         gmx_compute = GmxComputeInput(
             proc_input=inputs,
             mdp_file=mdp_fname,
-            struct_file="topol.top"
-            coord_file="conf.gro"
+            struct_file=top_fname,
+            coord_file=gro_fname,
         )
-                      
+
         return True, GmxComputeInput(**gmx_compute)
-    
+
     def build_input(
         self,
         inputs: Dict[str, Any],
@@ -104,14 +122,22 @@ class GmxPreProcessComponent(SpecificComponent):
     ) -> Dict[str, Any]:
         """
         Build the input for pdb2gmx command to produce .top file
+
+        Parameters
+        ----------
+        inputs : dict
+            The dict of file paths in the command
+        pdb_fname : str
+            The abspath of the .pdb file
+        config : str optional
+            Find the scratch file path if necessary
+        template : str optional
+            NEED TO BE UPDATED
         """
-                      
+
         assert inputs["engine"] == "gmx", "Engine must be gmx (Gromacs)!"
-        
-        with FileOutput(path=pdb_fname) as fp:                       
-            pdb_fpath = fp.abs_path
-         
-        #Is this part necessary?
+
+        # Is this part necessary?
         env = os.environ.copy()
 
         if config:
@@ -119,21 +145,20 @@ class GmxPreProcessComponent(SpecificComponent):
             env["OMP_NUM_THREADS"] = str(config.ncores)
 
         scratch_directory = config.scratch_directory if config else None
-                        
+
         return {
             "command": [
                 inputs["engine"],
                 "pdb2gmx",
                 "-f",
-                pdb_fpath,
+                pdb_fname,
                 "-ff",
                 inputs["ff_name"],
                 "-water",
                 "none",
             ],
-            "infiles": [pdb_fpath],
+            "infiles": [pdb_fname],
             "outfiles": ["conf.gro", "topol.top", "posre.itp"],
             "scratch_directory": scratch_directory,
             "environment": env,
         }
-
