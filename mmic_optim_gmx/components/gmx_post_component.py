@@ -50,6 +50,7 @@ class PostComponent(SpecificComponent):
             }
             CmdComponent.compute(input_model)
             mol_files[key] = os.path.abspath(key+".gro")
+            clean_files.append(mol_files[key])
 
         mol = {
             key: Molecule.from_file(mols_files[key])
@@ -57,6 +58,14 @@ class PostComponent(SpecificComponent):
         }
 
         return True, OptimOutput(proc_input=inputs.proc_input, molecule=mol, trajectory=traj)
+
+    @staticmethod
+    def cleanup(remove: List[str]):
+        for item in remove:
+            if os.path.isdir(item):
+                shutil.rmtree(item)
+            elif os.path.isfile(item):
+                os.remove(item)
 
         def build_input(
             self,
