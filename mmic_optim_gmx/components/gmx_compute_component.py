@@ -4,6 +4,7 @@ from mmelemental.models import Molecule, Trajectory
 from ..models import GmxComputeInput, GmxComputeOutput
 
 # Import components
+from mmic_util.components import CmdComponent
 from mmic.components.blueprints import SpecificComponent
 
 from typing import Dict, Any, List, Tuple, Optional
@@ -101,6 +102,7 @@ class PostComponent(SpecificComponent):
         """
         Build the input for grompp
         """
+        assert inputs["engine"] == "gmx", "Engine must be gmx (Gromacs)!"
 
         tpr_fname = inputs["tpr_fname"]
 
