@@ -39,9 +39,9 @@ class PostComponent(SpecificComponent):
             inputs.struct_file,
         )
         tpr_fname = "em.tpr"
-        assert os.path.exists("mdp_fname"), "No .mdp file found"
-        assert os.path.exists("gro_fname"), "No .gro file found"
-        assert os.path.exists("top_fname"), "No .top file found"
+        assert os.path.exists(mdp_fname), "No .mdp file found"
+        assert os.path.exists(gro_fname), "No .gro file found"
+        assert os.path.exists(top_fname), "No .top file found"
 
         # mol = os.path.abspath('mdp_fname') + "/minimized_struct"  # path to output structure file, minimized
         # traj = os.path.abspath('mdp_fname') + "/traj"  # path to output traj file
