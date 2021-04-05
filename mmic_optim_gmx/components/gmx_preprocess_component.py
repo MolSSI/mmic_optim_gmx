@@ -58,6 +58,12 @@ class GmxPreProcessComponent(SpecificComponent):
             "pbc": inputs.boundary,
         }
 
+        #Translate the method
+        if "steep" in mdp_inputs["integrator"]:
+            mdp_inputs["integrator"] = "steep"
+        if "conjugate" in mdp_inputs["integrator"]:
+            mdp_inputs["integrator"] = "cg"    
+
         if mdp_inputs["integrator"] == None:
             mdp_inputs["integrator"] = "steep"
         if mdp_inputs["emtol"] == None:
