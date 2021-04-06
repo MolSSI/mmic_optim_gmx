@@ -46,9 +46,21 @@ def test_compute_component():
 	"""
 	This test runs the compute component 
 	"""
+	
 	a, inputs = test_preprocess_component() if inputs == None else inputs
 	assert a == True
-	assert os.path.isfile("GMX_pre.pdb") == False
+	assert os.path.exists("GMX_pre.pdb") == False
 
 	return gmx_compute_component.compute(inputs)
 
+def test_postprocess_component():
+	"""
+	This test runs the postprocess component
+	"""
+
+	a, inputs = test_compute_component() if inputs == None else inputs
+	assert a == True
+	assert os.path.exists("mdout.mdp") == False
+
+	outputs = gmx_post_component.compute(inputs)
+	
