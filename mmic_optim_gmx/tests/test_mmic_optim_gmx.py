@@ -47,9 +47,9 @@ def test_compute_component():
 	This test runs the compute component 
 	"""
 	
-	a, inputs = test_preprocess_component() if inputs == None else inputs
-	assert a == True
-	assert os.path.exists("GMX_pre.pdb") == False
+	inputs = test_preprocess_component() if inputs == None else inputs
+
+	#assert os.path.exists("GMX_pre.pdb") == False#should be moved to another test
 
 	return gmx_compute_component.compute(inputs)
 
@@ -58,9 +58,26 @@ def test_postprocess_component():
 	This test runs the postprocess component
 	"""
 
-	a, inputs = test_compute_component() if inputs == None else inputs
-	assert a == True
-	assert os.path.exists("mdout.mdp") == False
+	inputs = test_compute_component() if inputs == None else inputs
+
+	#assert os.path.exists("mdout.mdp") == Falseshould be moved to another test
 
 	outputs = gmx_post_component.compute(inputs)
+
+def test_cleaner():
+	"""
+	This test will figure out if all the files are 
+	removed. (pdb, mdp, gro, edr, trr)
+	Should search for file extensions instead of 
+	specific file names
+	"""
+	cwd = os.getcwd()
+	f_path = os.listdir(cwd)
+
+	j = 0
+	for i in f_path:
+		if os.path.splitext(i)[1] in {".log", ".tpr", ".pdb", ".mdp", ".edr", ".trr"}
+			j = j + 1
+	
+	assert j == 0
 	
