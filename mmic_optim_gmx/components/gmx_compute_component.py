@@ -73,13 +73,21 @@ class PostComponent(SpecificComponent):
         }
         CmdComponent.compute(cmd_input_mdrun)
 
-        #clean_files = [mdp_fname, gro_fname, tpr_fname, "mdout.mdp"]
+        # clean_files = [mdp_fname, gro_fname, tpr_fname, "mdout.mdp"]
         cwd = os.getcwd()
         f_path = os.listdir(cwd)
         for i in f_path:
-            if os.path.splitext(i)[1] in {".log", ".tpr", ".pdb", ".mdp", ".edr", ".trr", ".err"}
-                clean_files.append(i)       
-        
+            if os.path.splitext(i)[1] in {
+                ".log",
+                ".tpr",
+                ".pdb",
+                ".mdp",
+                ".edr",
+                ".trr",
+                ".err",
+            }:
+                clean_files.append(i)
+
         self.cleanup(clean_files)
 
         mol = os.path.abspath("em.gro")
