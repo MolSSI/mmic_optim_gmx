@@ -56,6 +56,8 @@ class GmxPreProcessComponent(SpecificComponent):
             "emstep": inputs.step_size,
             "nsteps": inputs.max_steps,
             "pbc": inputs.boundary,
+            "cut_off": inputs.cut_off,
+            "coulomb_type":inputs.coulomb_type
         }
 
         #Translate the method
@@ -72,6 +74,10 @@ class GmxPreProcessComponent(SpecificComponent):
             mdp_inputs["emstep"] = "0.01"  # The unit here is nm
         if mdp_inputs["emstep"] == None:
             mdp_inputs["emstep"] = "0.01"
+        if mdp_inputs["cut_off"] == None:
+            mdp_inputs["cut_off"] = "Verlet"
+        if mdp_inputs["coulomb_type"] == None:
+            mdp_inputs["coulomb_type"] = "PME"
 
         # Translate boundary str tuple (perodic,perodic,perodic) to a string e.g. xyz
         pbc_dict = dict(zip(["x", "y", "z"], list(mdp_inputs["pbc"])))
