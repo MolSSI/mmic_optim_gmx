@@ -76,8 +76,8 @@ def test_cleaner():
 
 	j = 0
 	for i in f_path:
-		if os.path.splitext(i)[1] in {".log", ".tpr", ".pdb", ".mdp", ".edr", ".trr"}
+		if os.path.splitext(i)[1] in {".log", ".tpr", ".pdb", ".mdp", ".edr", ".trr", ".err"}
 			j = j + 1
 	
 	assert j == 0
-	
+
