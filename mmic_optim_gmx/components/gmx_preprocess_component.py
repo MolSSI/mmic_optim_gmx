@@ -11,7 +11,7 @@ from typing import List, Tuple, Optional, Set
 import os
 
 __all__ = ["GmxPreProcessComponent"]
-
+_supported_solvents = ("spc", "tip3p", "tip4p")
 
 class GmxPreProcessComponent(SpecificComponent):
     """
@@ -105,11 +105,19 @@ class GmxPreProcessComponent(SpecificComponent):
 
         # build pdb2gmx inputs
         fs = inputs.forcefield
-        ff_name, ff = list(fs.items()).pop()  # Why take the last
+        for sol in _supported_solvents:
+            if sol in fs:
+                sol_ffname = sol
+                del fs[sol]
+            else:
+                sol_ffname = None
+
+        ff_name, ff = list(fs.items()).pop()  #Take the only one left in it
         input_model = {
             "pdb_fname": pdb_fname,
             "ff_name": ff_name,
             "engine": inputs.proc_input.engine,
+            "sol_ff": sol_ffname
         }
 
         cmd_input = self.build_input(input_model)
@@ -162,8 +170,8 @@ class GmxPreProcessComponent(SpecificComponent):
 
         scratch_directory = config.scratch_directory if config else None
 
-        return {
-            "command": [
+        if inputs["sol_ff"] == None
+            cmd = [
                 inputs["engine"],
                 "pdb2gmx",
                 "-f",
@@ -172,7 +180,22 @@ class GmxPreProcessComponent(SpecificComponent):
                 inputs["ff_name"],
                 "-water",
                 "none",
-            ],
+            ]
+        else:
+            cmd = [
+                inputs["engine"],
+                "pdb2gmx",
+                "-f",
+                pdb_fname,
+                "-ff",
+                inputs["ff_name"],
+                "-water",
+                inputs["sol_ff"]
+                "-ignh",                
+            ]
+
+        return {
+            "command": cmd,
             "infiles": [pdb_fname],
             "outfiles": ["conf.gro", "topol.top", "posre.itp"],
             "scratch_directory": scratch_directory,
