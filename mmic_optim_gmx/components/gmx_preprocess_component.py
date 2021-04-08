@@ -13,6 +13,7 @@ import os
 __all__ = ["GmxPreProcessComponent"]
 _supported_solvents = ("spc", "tip3p", "tip4p")
 
+
 class GmxPreProcessComponent(SpecificComponent):
     """
     Prepares input for running gmx energy minimization.
@@ -112,12 +113,12 @@ class GmxPreProcessComponent(SpecificComponent):
             else:
                 sol_ffname = None
 
-        ff_name, ff = list(fs.items()).pop()  #Take the only one left in it
+        ff_name, ff = list(fs.items()).pop()  # Take the only one left in it
         input_model = {
             "pdb_fname": pdb_fname,
             "ff_name": ff_name,
             "engine": inputs.proc_input.engine,
-            "sol_ff": sol_ffname
+            "sol_ff": sol_ffname,
         }
 
         cmd_input = self.build_input(input_model)
@@ -170,7 +171,7 @@ class GmxPreProcessComponent(SpecificComponent):
 
         scratch_directory = config.scratch_directory if config else None
 
-        if inputs["sol_ff"] == None
+        if inputs["sol_ff"] == None:
             cmd = [
                 inputs["engine"],
                 "pdb2gmx",
@@ -190,8 +191,8 @@ class GmxPreProcessComponent(SpecificComponent):
                 "-ff",
                 inputs["ff_name"],
                 "-water",
-                inputs["sol_ff"]
-                "-ignh",                
+                inputs["sol_ff"],
+                "-ignh",
             ]
 
         return {
