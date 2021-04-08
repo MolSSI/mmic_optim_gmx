@@ -16,8 +16,10 @@ __all__ = ["GmxPreProcessComponent"]
 class GmxPreProcessComponent(SpecificComponent):
     """
     Prepares input for running gmx energy minimization.
-    The Molecule object will be converted to a .pdb file here.
-    .mdp and .top files will be constructed.
+    The Molecule object from MMIC schema will be
+    converted to a .pdb file here.
+    .mdp and .top files will also be constructed
+    according to the info in MMIC schema.
     """
 
     @classmethod
@@ -57,14 +59,16 @@ class GmxPreProcessComponent(SpecificComponent):
             "nsteps": inputs.max_steps,
             "pbc": inputs.boundary,
             "cut_off": inputs.cut_off,
-            "coulomb_type":inputs.coulomb_type
+            "coulomb_type": inputs.coulomb_type,
         }
 
-        #Translate the method
+        # The following part is ugly and may be
+        # improved in the future
+        # Translate the method
         if "steep" in mdp_inputs["integrator"]:
             mdp_inputs["integrator"] = "steep"
         if "conjugate" in mdp_inputs["integrator"]:
-            mdp_inputs["integrator"] = "cg"    
+            mdp_inputs["integrator"] = "cg"
 
         if mdp_inputs["integrator"] == None:
             mdp_inputs["integrator"] = "steep"
@@ -86,11 +90,11 @@ class GmxPreProcessComponent(SpecificComponent):
             if pbc_dict[dim] != "periodic":
                 continue
             else:
-                pbc = pbc + dim
+                pbc = pbc + dim  # pbc is a str, may need to be initiated elsewhere
         mdp_inputs["pbc"] = pbc
 
         # Write .mdp file
-        str = " = "
+        # str = " = "
         with open(mdp_fname, "w") as inp:
             for key, val in mdp_inputs.items():
                 inp.write(f"{key} = {val}\n")
@@ -101,7 +105,7 @@ class GmxPreProcessComponent(SpecificComponent):
 
         # build pdb2gmx inputs
         fs = inputs.forcefield
-        ff_name, ff = list(fs.items()).pop()
+        ff_name, ff = list(fs.items()).pop()  # Why take the last
         input_model = {
             "pdb_fname": pdb_fname,
             "ff_name": ff_name,
