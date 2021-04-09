@@ -83,7 +83,6 @@ class PostComponent(SpecificComponent):
                 ".pdb",
                 ".mdp",
                 ".edr",
-                ".trr",
                 ".err",
             }:
                 clean_files.append(i)
