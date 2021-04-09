@@ -37,6 +37,7 @@ class PostComponent(SpecificComponent):
             key: Trajectory.from_file(trajs_files[key])
             for key in inputs.proc_input.trajectory
         }
+        clean_files.append(traj_file)
 
         # get mols from parsing struct output file
         mol_file = (
@@ -48,9 +49,9 @@ class PostComponent(SpecificComponent):
         for key in inputs.proc_input.molecule:
             input_model = {
                 "molname": key,
-                "gro_fname": mol_file,  # May be replaced by inpuuts.molecule
+                "gro_fname": mol_file,  # May be replaced by inputs.molecule
             }
-            CmdComponent.compute(input_model)
+            CmdComponent.compute(self.build_input(input_model))
             mol_files[key] = os.path.abspath(key + ".gro")
             clean_files.append(mol_files[key])
 
