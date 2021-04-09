@@ -70,17 +70,17 @@ class GmxPreProcessComponent(SpecificComponent):
         if "conjugate" in mdp_inputs["integrator"]:
             mdp_inputs["integrator"] = "cg"
 
-        if mdp_inputs["integrator"] == None:
+        if mdp_inputs["integrator"] is None:
             mdp_inputs["integrator"] = "steep"
-        if mdp_inputs["emtol"] == None:
+        if mdp_inputs["emtol"] is None:
             mdp_inputs["emtol"] = "1000"
-        if mdp_inputs["emstep"] == None:
+        if mdp_inputs["emstep"] is None:
             mdp_inputs["emstep"] = "0.01"  # The unit here is nm
-        if mdp_inputs["emstep"] == None:
+        if mdp_inputs["emstep"] is None:
             mdp_inputs["emstep"] = "0.01"
-        if mdp_inputs["cut_off"] == None:
+        if mdp_inputs["cut_off"] is None:
             mdp_inputs["cut_off"] = "Verlet"
-        if mdp_inputs["coulomb_type"] == None:
+        if mdp_inputs["coulomb_type"] is None:
             mdp_inputs["coulomb_type"] = "PME"
 
         # Translate boundary str tuple (perodic,perodic,perodic) to a string e.g. xyz
@@ -170,7 +170,7 @@ class GmxPreProcessComponent(SpecificComponent):
 
         scratch_directory = config.scratch_directory if config else None
 
-        if inputs["sol_ff"] == None:
+        if inputs["sol_ff"] is None:
             cmd = [
                 inputs["engine"],
                 "pdb2gmx",
