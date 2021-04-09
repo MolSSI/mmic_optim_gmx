@@ -100,7 +100,7 @@ class GmxPreProcessComponent(SpecificComponent):
             for key, val in mdp_inputs.items():
                 inp.write(f"{key} = {val}\n")
 
-        # Get the abspath of .pdbb and .mdp files
+        # Get the abspath of .pdb and .mdp files
         pdb_fname = os.path.abspath(pdb_fname)
         mdp_fname = os.path.abspath(mdp_fname)
 
