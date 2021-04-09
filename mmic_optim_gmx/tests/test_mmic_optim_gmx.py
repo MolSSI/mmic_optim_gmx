@@ -4,9 +4,9 @@ Unit and regression test for the mmic_optim_gmx package.
 
 # Import package, test suite, and other packages as needed
 from mmic_optim_gmx.components import (
-    gmx_preprocess_component,
-    gmx_compute_component,
-    gmx_post_component,
+    GmxPreProcessComponent,
+    GmxComputeComponent,
+    GmxPostComponent,
 )
 import mmic_optim
 from mmic_optim import OptimInput, OptimOutput
