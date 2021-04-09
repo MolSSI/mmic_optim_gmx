@@ -1,5 +1,4 @@
 # Import models
-from mmelemental.models.util.output import FileOutput
 from mmic_optim.models.input import OptimInput
 from ..models import GmxComputeInput
 
