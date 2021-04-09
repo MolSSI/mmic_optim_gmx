@@ -11,7 +11,7 @@ from typing import Dict, Any, List, Tuple, Optional
 import os
 
 
-class PostComponent(SpecificComponent):
+class GmxComputeComponent(SpecificComponent):
     @classmethod
     def input(cls):
         return GmxComputeInput
