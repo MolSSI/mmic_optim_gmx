@@ -51,7 +51,9 @@ class GmxPostComponent(SpecificComponent):
                 "molname": key,
                 "gro_fname": mol_file,  # May be replaced by inputs.molecule
             }
-            CmdComponent.compute(self.build_input(input_model))
+            cmd_input = self.build_input(input_model)
+            CmdComponent.compute(cmd_input)
+            #CmdComponent.compute(self.build_input(input_model))
             mol_files[key] = os.path.abspath(key + ".gro")
             clean_files.append(mol_files[key])
 
@@ -79,8 +81,8 @@ class GmxPostComponent(SpecificComponent):
             template: Optional[str] = None,
         ) -> Dict[str, Any]:
 
-            gro_fname = inpits["gro_fname"]  # The gro file containing all molecules
-            mol_fname = inouts["molname"] + ".gro"
+            gro_fname = inputs["gro_fname"]  # The gro file containing all molecules
+            mol_fname = inputs["molname"] + ".gro"
 
             env = os.environ.copy()
 
