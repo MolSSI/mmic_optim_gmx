@@ -6,7 +6,7 @@ from ..models import GmxComputeInput
 from mmic_util.components import CmdComponent
 from mmic.components.blueprints import SpecificComponent
 
-from typing import List, Tuple, Optional, Set
+from typing import Any, Dict, List, Tuple, Optional, Set
 import os
 
 __all__ = ["GmxPreProcessComponent"]
