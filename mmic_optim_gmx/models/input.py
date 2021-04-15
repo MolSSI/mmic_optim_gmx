@@ -11,10 +11,10 @@ class GmxComputeInput(ProcInput):
         ...,
         description="The file used for specifying the parameters. Should be a .mdp file.",
     )
-    struct_file: str = Field(
+    forcefield: str = Field(
         ..., description="The file of the system structure. Should be a .top file."
     )
-    coord_file: str = Field(
+    molecule: str = Field(
         ...,
         description="The file of the coordinates of the atoms in the system. Should be a .gro file.",
     )
