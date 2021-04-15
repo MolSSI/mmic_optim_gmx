@@ -5,12 +5,14 @@ Unit and regression test for the mmic_optim_gmx package.
 # Import package, test suite, and other packages as needed
 import mmic_optim
 from mmic_optim import OptimInput, OptimOutput
-from mmic_optim_gmx.components import (
-    GmxPreProcessComponent,
-    GmxComputeComponent,
-    GmxPostComponent,
-)
+import mmic_optim_gmx
+from mmic_optim_gmx.components import(
+    gmx_preprocess_component,
+    gmx_compute_component,
+    gmx_post_component
+    )
 import pytest
+import json
 import sys
 import os
 
