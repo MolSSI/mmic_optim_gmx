@@ -106,8 +106,8 @@ class GmxPreProcessComponent(SpecificComponent):
         gmx_compute = GmxComputeInput(
             proc_input=inputs.proc_input,
             mdp_file=mdp_file,
-            struct_file=top_file,
-            coord_file=gro_file,
+            forcefield=top_file,
+            molecule=gro_file,
         )
         
         return True, gmx_compute
