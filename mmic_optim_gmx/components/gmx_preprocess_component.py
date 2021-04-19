@@ -87,49 +87,33 @@ class GmxPreProcessComponent(SpecificComponent):
 
         # Write .mdp file
         mdp_file = random_file(suffix=".mdp")
-        with open(mdp_fname, "w") as inp:
+        with open(mdp_file, "w") as inp:
             for key, val in mdp_inputs.items():
                 inp.write(f"{key} = {val}\n")
 
-        # build pdb2gmx inputs
-        ff_sol = inputs.forcefield
-        for sol in _supported_solvents:
-            if sol in ff_sol:
-                sol_ffname = sol
-                del ff_sol[sol]
-            else:
-                sol_ffname = None
+        fs = inputs.forcefield
+        mols = inputs.molecule
 
-        ff_name, ff = list(fs.items()).pop()  # Take the only one left in it
+        ff_name, ff = list(fs.items()).pop() # Here ff_name gets actually the related mol name, but it will not be used
+        mol_name, mol = list(mols.items()).pop()
 
-        input_model = {
-            "ff_name": ff_name,
-            "proc_input": inputs,
-            "sol_ff": sol_ffname,
-        }
+        gro_file = random_file(suffix=".gro")# output gro
+        top_file = random_file(suffix=".top")
 
-        clean_files, cmd_input = self.build_input(input_model)
-        rvalue = CmdComponent.compute(cmd_input)
-
-        self.cleanup(clean_files)
+        mol.to_file(gro_file, "gro")
+        ff.to_file(top_file, "top")
 
         gmx_compute = GmxComputeInput(
             proc_input=inputs.proc_input,
-            mdp_file=mdp_fname,
-            struct_file=top_fname,
-            coord_file=gro_fname,
+            mdp_file=mdp_file,
+            struct_file=top_file,
+            coord_file=gro_file,
         )
+        
+        return True, gmx_compute
 
-        return True, self.parse_output(mdp_file, rvalue.dict(), inputs)
 
-    @staticmethod
-    def cleanup(remove: List[str]):
-        for item in remove:
-            if os.path.isdir(item):
-                shutil.rmtree(item)
-            elif os.path.isfile(item):
-                os.remove(item)
-
+    """
     def build_input(
         self,
         inputs: Dict[str, Any],
@@ -138,10 +122,11 @@ class GmxPreProcessComponent(SpecificComponent):
         template: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
+        """
         Build the input for pdb2gmx command to produce .top file
 
         """
-
+        """
         assert inputs["proc_input"].engine == "gmx", "Engine must be gmx (Gromacs)!"#inputs["proc_input"].engine = OptimInput.engine
 
         fname = random_file(suffix=".gro")# input gro
@@ -218,7 +203,8 @@ class GmxPreProcessComponent(SpecificComponent):
             "scratch_directory": scratch_directory,
             "environment": env,
         }
-
+    """
+    """
     def parse_output(
         self, mdp_file: str, output: Dict[str, str], inputs: Dict[str, Any]
         ) -> GmxComputeInput
@@ -243,4 +229,5 @@ class GmxPreProcessComponent(SpecificComponent):
             stdout=stdout,
             stderr=stderr,
         )
+        """
 
