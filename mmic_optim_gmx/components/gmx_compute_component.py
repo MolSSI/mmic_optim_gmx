@@ -35,7 +35,7 @@ class GmxComputeComponent(SpecificComponent):
             inputs = self.input()(**inputs)
 
         proc_input, mdp_file, gro_file, top_file = (
-            inputs.proc_input
+            inputs.proc_input,
             inputs.mdp_file,
             inputs.molecule,
             inputs.forcefield,
@@ -47,17 +47,14 @@ class GmxComputeComponent(SpecificComponent):
             "mdp_file": mdp_file,
             "gro_file": gro_file,
             "top_file": top_file,
-            "tpr_file": tpr_file
+            "tpr_file": tpr_file,
         }
 
         clean_files, cmd_input_grompp = self.build_input_grompp(input_model)
         CmdComponent.compute(cmd_input_grompp)
         self.cleanup(clean_files)
 
-        input_model = {
-            "proc_input": proc_input,
-            "tpr_file": tpr_file
-        }
+        input_model = {"proc_input": proc_input, "tpr_file": tpr_file}
 
         clean_files, cmd_input_mdrun = self.build_input_mdrun(input_model)
         rvalue = CmdComponent.compute(cmd_input_mdrun)
@@ -66,7 +63,7 @@ class GmxComputeComponent(SpecificComponent):
         return True, self.parse_output(
             rvalue.dict(),
             proc_input,
-            )
+        )
 
     @staticmethod
     def cleanup(remove: List[str]):
@@ -148,7 +145,7 @@ class GmxComputeComponent(SpecificComponent):
         clean_files = [log_file, edr_file, mdp_file]
 
         cmd = [
-            inputs["proc_input"].engine,# Should here be gmx_mpi?
+            inputs["proc_input"].engine,  # Should here be gmx_mpi?
             "mdrun",
             "-s",
             inputs["tpr_file"],
@@ -157,9 +154,9 @@ class GmxComputeComponent(SpecificComponent):
             "-c",
             gro_file,
             "-e",
-            edr_file
+            edr_file,
             "-g",
-            log_file
+            log_file,
         ]
         outfiles = [trr_file, gro_file]
 
@@ -169,20 +166,20 @@ class GmxComputeComponent(SpecificComponent):
                 if val:
                     cmd.extend([key, val])
                 else:
-                    cmd.extend([key]) 
+                    cmd.extend([key])
 
         return clean_files, {
-            "command" : cmd,
+            "command": cmd,
             "infiles": [inputs["tpr_file"]],
             "outfiles": outfiles,
             "outfiles_load": True,
             "scratch_directory": scratch_directory,
-            "environment": env,            
-        }        
+            "environment": env,
+        }
 
     def parse_output(
         self, output: Dict[str, str], inputs: Dict[str, Any]
-        ) -> GmxComputeInput
+    ) -> GmxComputeInput:
         stdout = output["stdout"]
         stderr = output["stderr"]
         outfiles = output["outfiles"]
@@ -192,10 +189,7 @@ class GmxComputeComponent(SpecificComponent):
         return self.output()(
             proc_input=inputs,
             molecule=conf,
-            trajectory = traj,
+            trajectory=traj,
             stdout=stdout,
             stderr=stderr,
         )
-
-
-
