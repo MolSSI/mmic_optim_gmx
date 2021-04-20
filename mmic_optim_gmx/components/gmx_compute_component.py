@@ -5,6 +5,7 @@ from ..models import GmxComputeInput, GmxComputeOutput
 
 # Import components
 from mmic_util.components import CmdComponent
+from mmelemental.util.files import random_file
 from mmic.components.blueprints import SpecificComponent
 
 from typing import Dict, Any, List, Tuple, Optional
@@ -33,70 +34,39 @@ class GmxComputeComponent(SpecificComponent):
         if isinstance(inputs, dict):
             inputs = self.input()(**inputs)
 
-        mdp_fname, gro_fname, top_fname = (
+        proc_input, mdp_file, gro_file, top_file = (
+            inputs.proc_input
             inputs.mdp_file,
-            inputs.coord_file,
-            inputs.struct_file,
+            inputs.molecule,
+            inputs.forcefield,
         )
-        tpr_fname = "em.tpr"
-        assert os.path.exists(mdp_fname), "No .mdp file found"
-        assert os.path.exists(gro_fname), "No .gro file found"
-        assert os.path.exists(top_fname), "No .top file found"
 
-        # mol = os.path.abspath('mdp_fname') + "/minimized_struct"  # path to output structure file, minimized
-        # traj = os.path.abspath('mdp_fname') + "/traj"  # path to output traj file
-        # Is Gromacs able to output files to specific locations?
-
+        tpr_file = random_file(suffix=".tpr")
         input_model = {
-            "mdp_fname": mdp_fname,
-            "gro_fname": gro_fname,
-            "top_fname": top_fname,
-            "engine": inputs.proc_input.engine,
-            "tpr_fname": tpr_fname,
+            "proc_input": proc_input,
+            "mdp_file": mdp_file,
+            "gro_file": gro_file,
+            "top_file": top_file,
+            "tpr_file": tpr_file
         }
 
-        cmd_input_grompp = self.build_input(input_model)
+        clean_files, cmd_input_grompp = self.build_input_grompp(input_model)
         CmdComponent.compute(cmd_input_grompp)
-
-        tpr_fname = os.path.abspath(tpr_fname)
-
-        cmd_input_mdrun = {
-            "command": [
-                inputs.proc_input.engine,
-                "mdrun",
-                "-s",
-                tpr_fname,
-                "-deffnm",
-                "em",
-            ],
-            "outfiles": ["em.trr", "em.gro"],
-        }
-        CmdComponent.compute(cmd_input_mdrun)
-
-        # clean_files = [mdp_fname, gro_fname, tpr_fname, "mdout.mdp"]
-        cwd = os.getcwd()
-        f_path = os.listdir(cwd)
-        for i in f_path:
-            if os.path.splitext(i)[1] in {
-                ".log",
-                ".tpr",
-                ".pdb",
-                ".mdp",
-                ".edr",
-                ".err",
-            }:
-                clean_files.append(i)
-
         self.cleanup(clean_files)
 
-        mol = os.path.abspath("em.gro")
-        traj = os.path.abspath("em.trr")
+        input_model = {
+            "proc_input": proc_input,
+            "tpr_file": tpr_file
+        }
 
-        return True, GmxComputeOutput(
-            proc_input=inputs.proc_input,
-            molecule=mol,
-            trajectory=traj,
-        )
+        clean_files, cmd_input_mdrun = self.build_input_mdrun(input_model)
+        rvalue = CmdComponent.compute(cmd_input_mdrun)
+        self.cleanup(clean_files)
+
+        return True, self.parse_output(
+            rvalue.dict(),
+            proc_input,
+            )
 
     @staticmethod
     def cleanup(remove: List[str]):
@@ -106,7 +76,7 @@ class GmxComputeComponent(SpecificComponent):
             elif os.path.isfile(item):
                 os.remove(item)
 
-    def build_input(
+    def build_input_grompp(
         self,
         inputs: Dict[str, Any],
         config: Optional["TaskConfig"] = None,
@@ -115,11 +85,8 @@ class GmxComputeComponent(SpecificComponent):
         """
         Build the input for grompp
         """
-        assert inputs["engine"] == "gmx", "Engine must be gmx (Gromacs)!"
+        assert inputs["proc_input"].engine == "gmx", "Engine must be gmx (Gromacs)!"
 
-        tpr_fname = inputs["tpr_fname"]
-
-        # Is this part necessary?
         env = os.environ.copy()
 
         if config:
@@ -128,20 +95,107 @@ class GmxComputeComponent(SpecificComponent):
 
         scratch_directory = config.scratch_directory if config else None
 
-        return {
-            "command": [
-                inputs["engine"],
-                "grompp",
-                "-v -f",
-                inouts["mdp_fname"],
-                "-c",
-                inputs["gro_fname"],
-                "-p",
-                inputs["top_fname"],
-                "-o",
-                tpr_fname,
-            ],
-            "outfiles": [tpr_fname],
+        tpr_file = inputs["tpr_file"]
+
+        clean_files = []
+        clean_files.append(inputs["mdp_file"])
+        clean_files.append(inputs["gro_file"])
+
+        cmd = [
+            inputs["proc_input"].engine,
+            "grompp",
+            "-v -f",
+            inputs["mdp_file"],
+            "-c",
+            inputs["gro_file"],
+            "-p",
+            inputs["top_file"],
+            "-o",
+            tpr_file,
+        ]
+        outfiles = [tpr_file]
+
+        return clean_files, {
+            "command": cmd,
+            "infiles": [inputs["mdp_file"], inputs["gro_file"]],
+            "outfiles": outfiles,
+            "outfiles_load": True,
             "scratch_directory": scratch_directory,
             "environment": env,
         }
+
+    def build_input_mdrun(
+        self,
+        inputs: Dict[str, Any],
+        config: Optional["TaskConfig"] = None,
+        template: Optional[str] = None,
+    ) -> Dict[str, Any]:
+
+        if config:
+            env["MKL_NUM_THREADS"] = str(config.ncores)
+            env["OMP_NUM_THREADS"] = str(config.ncores)
+
+        scratch_directory = config.scratch_directory if config else None
+
+        clean_files = []
+
+        log_file = random_file(suffix=".log")
+        trr_file = random_file(suffix=".trr")
+        edr_file = random_file(suffix=".edr")
+        gro_file = random_file(suffix=".gro")
+        mdp_file = "mdout.mdp"
+
+        clean_files = [log_file, edr_file, mdp_file]
+
+        cmd = [
+            inputs["proc_input"].engine,# Should here be gmx_mpi?
+            "mdrun",
+            "-s",
+            inputs["tpr_file"],
+            "-o",
+            trr_file,
+            "-c",
+            gro_file,
+            "-e",
+            edr_file
+            "-g",
+            log_file
+        ]
+        outfiles = [trr_file, gro_file]
+
+        # For extra args
+        if inputs["proc_input"].kwargs:
+            for key, val in inputs["proc_input"].kwargs.items():
+                if val:
+                    cmd.extend([key, val])
+                else:
+                    cmd.extend([key]) 
+
+        return clean_files, {
+            "command" : cmd,
+            "infiles": [inputs["tpr_file"]],
+            "outfiles": outfiles,
+            "outfiles_load": True,
+            "scratch_directory": scratch_directory,
+            "environment": env,            
+        }        
+
+    def parse_output(
+        self, output: Dict[str, str], inputs: Dict[str, Any]
+        ) -> GmxComputeInput
+        stdout = output["stdout"]
+        stderr = output["stderr"]
+        outfiles = output["outfiles"]
+
+        traj, conf = outfiles.values()
+
+        return self.output()(
+            proc_input=inputs,
+            molecule=conf,
+            trajectory = traj,
+            stdout=stdout,
+            stderr=stderr,
+        )
+
+
+
