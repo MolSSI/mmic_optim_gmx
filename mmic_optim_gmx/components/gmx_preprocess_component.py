@@ -5,8 +5,8 @@ from mmelemental.models.util import FileOutput
 from mmelemental.util.files import random_file
 
 # Import components
-from mmic_util.components import CmdComponent
-from mmic.components.blueprints import SpecificComponent
+from mmic_cmd.components import CmdComponent
+from mmic.components.blueprints import GenericComponent
 
 from typing import Any, Dict, List, Tuple, Optional, Set
 import os
@@ -15,7 +15,7 @@ __all__ = ["GmxPreProcessComponent"]
 _supported_solvents = ("spc", "tip3p", "tip4p")
 
 
-class GmxPreProcessComponent(SpecificComponent):
+class GmxPreProcessComponent(GenericComponent):
     """
     Prepares input for running gmx energy minimization.
     The Molecule object from MMIC schema will be
@@ -46,7 +46,7 @@ class GmxPreProcessComponent(SpecificComponent):
 
         mdp_inputs = {
             "integrator": inputs.method,
-            "emtol": inouts.tol,
+            "emtol": inputs.tol,
             "emstep": inputs.step_size,
             "nsteps": inputs.max_steps,
             "pbc": inputs.boundary,
@@ -77,7 +77,7 @@ class GmxPreProcessComponent(SpecificComponent):
 
         # Translate boundary str tuple (perodic,perodic,perodic) to a string e.g. xyz
         pbc_dict = dict(zip(["x", "y", "z"], list(mdp_inputs["pbc"])))
-
+        pbc = ""
         for dim in list(pbc_dict.keys()):
             if pbc_dict[dim] != "periodic":
                 continue

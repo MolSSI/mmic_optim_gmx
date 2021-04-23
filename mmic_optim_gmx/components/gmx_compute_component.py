@@ -4,15 +4,15 @@ from mmelemental.models import Molecule, Trajectory
 from ..models import GmxComputeInput, GmxComputeOutput
 
 # Import components
-from mmic_util.components import CmdComponent
+from mmic_cmd.components import CmdComponent
 from mmelemental.util.files import random_file
-from mmic.components.blueprints import SpecificComponent
+from mmic.components.blueprints import GenericComponent
 
 from typing import Dict, Any, List, Tuple, Optional
 import os
 
 
-class GmxComputeComponent(SpecificComponent):
+class GmxComputeComponent(GenericComponent):
     @classmethod
     def input(cls):
         return GmxComputeInput
