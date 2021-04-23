@@ -9,7 +9,7 @@ A short description of the project.
 
 ### Copyright
 
-Copyright (c) 2021, Andrew-Abi Mansour, Xu Guo
+Copyright (c) 2021, Xu Guo
 
 
 #### Acknowledgements
