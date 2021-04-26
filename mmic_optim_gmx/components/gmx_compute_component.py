@@ -99,9 +99,9 @@ class GmxComputeComponent(GenericComponent):
         clean_files.append(inputs["gro_file"])
 
         cmd = [
-            inputs["proc_input"].engine,
+           # inputs["proc_input"].engine,
             "grompp",
-            "-v -f",
+            "-f",
             inputs["mdp_file"],
             "-c",
             inputs["gro_file"],
@@ -114,7 +114,7 @@ class GmxComputeComponent(GenericComponent):
 
         return clean_files, {
             "command": cmd,
-            "infiles": [inputs["mdp_file"], inputs["gro_file"]],
+            "infiles": [inputs["mdp_file"], inputs["gro_file"], inputs["top_file"]],
             "outfiles": outfiles,
             "outfiles_load": True,
             "scratch_directory": scratch_directory,
@@ -145,7 +145,7 @@ class GmxComputeComponent(GenericComponent):
         clean_files = [log_file, edr_file, mdp_file]
 
         cmd = [
-            inputs["proc_input"].engine,  # Should here be gmx_mpi?
+           # inputs["proc_input"].engine,  # Should here be gmx_mpi?
             "mdrun",
             "-s",
             inputs["tpr_file"],
