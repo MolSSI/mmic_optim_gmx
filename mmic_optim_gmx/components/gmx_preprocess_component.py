@@ -1,6 +1,6 @@
 # Import models
 from mmic_optim.models.input import OptimInput
-from ..models import GmxComputeInput
+from mmic_optim_gmx.models import GmxComputeInput
 from mmelemental.models.util import FileOutput
 from mmelemental.util.files import random_file
 
@@ -94,19 +94,17 @@ class GmxPreProcessComponent(GenericComponent):
         fs = inputs.forcefield
         mols = inputs.molecule
 
-        ff_name, ff = list(
-            fs.items()
-        ).pop()  # Here ff_name gets actually the related mol name, but it will not be used
+        ff_name, ff = list(fs.items()).pop()  # Here ff_name gets actually the related mol name, but it will not be used
         mol_name, mol = list(mols.items()).pop()
 
         gro_file = random_file(suffix=".gro")  # output gro
         top_file = random_file(suffix=".top")
 
-        mol.to_file(gro_file, "gro")
-        ff.to_file(top_file, "top")
+        mol.to_file(gro_file)
+        ff.to_file(top_file)
 
         gmx_compute = GmxComputeInput(
-            proc_input=inputs.proc_input,
+            proc_input=inputs,
             mdp_file=mdp_file,
             forcefield=top_file,
             molecule=gro_file,
