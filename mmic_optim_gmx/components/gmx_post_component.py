@@ -37,7 +37,7 @@ class GmxPostComponent(GenericComponent):
         """
 
         clean_files = []
-
+        """
         traj_file = inputs.trajectory  
         traj_name = list(inputs.proc_input.trajectory)[0]
         trajs_files = {traj_name: traj_file}
@@ -46,13 +46,13 @@ class GmxPostComponent(GenericComponent):
             for key in inputs.proc_input.trajectory
         }
         clean_files.append(traj_file)
-
+        """
 
         mol_file = inputs.molecule
         mol_name = list(inputs.proc_input.molecule)[0]  
         mol_files = {mol_name: mol_file} 
         mol = {
-            key: Molecule.from_file(mols_files[key])
+            key: Molecule.from_file(mol_files[key])
             for key in inputs.proc_input.molecule
         }        
         clean_files.append(mol_file)
@@ -61,7 +61,7 @@ class GmxPostComponent(GenericComponent):
 
 
         return True, OptimOutput(
-            proc_input=inputs.proc_input, molecule=mol, trajectory=traj
+            proc_input=inputs.proc_input, molecule=mol, #trajectory=traj
         )
 
     @staticmethod
