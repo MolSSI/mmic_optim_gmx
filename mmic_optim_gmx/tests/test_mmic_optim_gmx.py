@@ -3,22 +3,23 @@ Unit and regression test for the mmic_optim_gmx package.
 """
 
 # Import package, test suite, and other packages as needed
+import mmelemental
 import mmic_optim
 from mmic_optim import OptimInput, OptimOutput
+from mmelemental.models import Molecule, Trajectory, ForceField
 import mmic_optim_gmx
+
 from mmic_optim_gmx.components import(
     gmx_preprocess_component,
     gmx_compute_component,
     gmx_post_component
     )
+
+import mm_data
 import pytest
 import json
 import sys
 import os
-
-mol_file = os.path.join("mmic_optim_gmx", "data", "molecule.json")
-ff_file = os.path.join("mmic_optim_gmx", "data", "forcefield.json")
-
 
 def test_mmic_optim_gmx_imported():
     """Sample test, will always pass so long as import statement worked"""
@@ -31,49 +32,27 @@ def test_preprocess_component():
     runs preprocess component to see if a .mdp file can be
     written successfully
     """
+    
+    mol = mmelemental.models.Molecule.from_file(mm_data.mols["water-mol.json"])
+    ff = mmelemental.models.ForceField.from_file(mm_data.ffs["water-ff.json"]) 
+    #ff.to_file("temp.json")
+    #ff = mmelemental.models.ForceField.from_file("temp.json")
+    #traj = Trajectory.from_file(traj_file)
 
-    with open(mol_file, "r") as fp:
-        mol = json.load(fp)
-
-    with open(ff_file, "r") as fp:
-        ff = json.load(fp)
-
-    inputs = OptiomInput(
+    pre_inputs = OptimInput(
+        engine="gmx",# This is important
         molecule={"mol": mol},
-        forcefield={"ff": ff},
-        boundary=(periodic, periodic, periodic),
-        max_steps=10000,
-        step_stze=0.01,
+        forcefield={"mol": ff},
+        boundary=("periodic", "periodic", "periodic"),
+        max_steps=1000,
+        step_size=0.01,
         tol=1000,
         method="steepest descent",
     )
 
-    return gmx_preprocess_component.compute(inputs)
-
-
-def test_compute_component():
-    """
-    This test runs the compute component
-    """
-
-    inputs = test_preprocess_component() if inputs == None else inputs
-
-    # assert os.path.exists("GMX_pre.pdb") == False#should be moved to another test
-
-    return gmx_compute_component.compute(inputs)
-
-
-def test_postprocess_component():
-    """
-    This test runs the postprocess component
-    """
-
-    inputs = test_compute_component() if inputs == None else inputs
-
-    # assert os.path.exists("mdout.mdp") == Falseshould be moved to another test
-
-    outputs = gmx_post_component.compute(inputs)
-
+    em_input = gmx_preprocess_component.GmxPreProcessComponent.compute(pre_inputs)
+    em_output = gmx_compute_component.GmxComputeComponent.compute(em_input)
+    final_output = gmx_post_component.GmxPostComponent.compute(em_output)
 
 def test_cleaner():
     """
@@ -84,6 +63,7 @@ def test_cleaner():
     """
     cwd = os.getcwd()
     f_path = os.listdir(cwd)
+    print(cwd)
 
     j = 0
     for i in f_path:
