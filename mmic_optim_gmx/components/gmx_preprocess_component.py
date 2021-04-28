@@ -50,7 +50,7 @@ class GmxPreProcessComponent(GenericComponent):
             "emstep": inputs.step_size,
             "nsteps": inputs.max_steps,
             "pbc": inputs.boundary,
-            "cut_off": inputs.cut_off,
+            #    "cutoff-scheme": inputs.cut_off,
             "coulomb_type": inputs.coulomb_type,
         }
 
@@ -70,8 +70,8 @@ class GmxPreProcessComponent(GenericComponent):
             mdp_inputs["emstep"] = "0.01"  # The unit here is nm
         if mdp_inputs["emstep"] is None:
             mdp_inputs["emstep"] = "0.01"
-        if mdp_inputs["cut_off"] is None:
-            mdp_inputs["cut_off"] = "Verlet"
+        # if mdp_inputs["cutoff-scheme"] is None:
+        #    mdp_inputs["cutoff-scheme"] = "Verlet"
         if mdp_inputs["coulomb_type"] is None:
             mdp_inputs["coulomb_type"] = "PME"
 
@@ -94,44 +94,58 @@ class GmxPreProcessComponent(GenericComponent):
         fs = inputs.forcefield
         mols = inputs.molecule
 
-        ff_name, ff = list(fs.items()).pop()  # Here ff_name gets actually the related mol name, but it will not be used
+        ff_name, ff = list(
+            fs.items()
+        ).pop()  # Here ff_name gets actually the related mol name, but it will not be used
         mol_name, mol = list(mols.items()).pop()
 
         gro_file = random_file(suffix=".gro")  # output gro
         top_file = random_file(suffix=".top")
+        boxed_gro_file = random_file(suffix=".gro")
 
         mol.to_file(gro_file)
         ff.to_file(top_file)
+
+        input_model = {
+            "gro_file": gro_file,
+            "proc_input": inputs,
+            "boxed_gro_file": boxed_gro_file,
+        }
+        clean_files, cmd_input = self.build_input(input_model)
+        rvalue = CmdComponent.compute(cmd_input)
+        boxed_gro_file = str(rvalue.outfiles[boxed_gro_file])
+        print(boxed_gro_file)
+        self.cleanup(clean_files)
 
         gmx_compute = GmxComputeInput(
             proc_input=inputs,
             mdp_file=mdp_file,
             forcefield=top_file,
-            molecule=gro_file,
+            molecule=boxed_gro_file,
         )
 
         return True, gmx_compute
 
+    @staticmethod
+    def cleanup(remove: List[str]):
+        for item in remove:
+            if os.path.isdir(item):
+                shutil.rmtree(item)
+            elif os.path.isfile(item):
+                os.remove(item)
 
-"""
     def build_input(
         self,
         inputs: Dict[str, Any],
-        pdb_fname: str,
         config: Optional["TaskConfig"] = None,
         template: Optional[str] = None,
     ) -> Dict[str, Any]:
- 
-        assert inputs["proc_input"].engine == "gmx", "Engine must be gmx (Gromacs)!"#inputs["proc_input"].engine = OptimInput.engine
+
+        assert inputs["proc_input"].engine == "gmx", "Engine must be gmx (Gromacs)!"
         clean_files = []
 
-        #for key in inputs["proc_input"].molecule.keys():# OptimInput.molecule.keys()
-        #    inputs["proc_input"].molecule[key].to_file(
-        #        file_name=fname, mode="a"
-        #        )
-
+        boxed_gro_file = inputs["boxed_gro_file"]
         clean_files.append(inputs["gro_file"])
-        clean_files.append(inputs["mdp_file"])
 
         env = os.environ.copy()
 
@@ -141,61 +155,45 @@ class GmxPreProcessComponent(GenericComponent):
 
         scratch_directory = config.scratch_directory if config else None
 
-        tpr_file = random_file(suffix=".tpr")
-
         cmd = [
             inputs["proc_input"].engine,
-            "grompp",
-            "-v -f",
-            inputs["mdp_file"],
-            "-c",
+            "editconf",
+            "-f",
             inputs["gro_file"],
-            "-p",
-            inputs["top_file"],
+            "-d",
+            "2",
             "-o",
-            tpr_file,
+            boxed_gro_file,
         ]
-        outfiles = [tpr_file]        
-
-        # For extra args
-        if inputs["proc_input"].kwargs:
-            for key, val in inputs["proc_input"].kwargs.items():
-                if val:
-                    cmd.extend([key, val])
-                else:
-                    cmd.extend([key])        
+        outfiles = [boxed_gro_file]
 
         return clean_files, {
             "command": cmd,
-            "infiles": [inputs["mdp_file"], inputs["gro_file"]],
+            "infiles": [inputs["gro_file"]],
             "outfiles": outfiles,
-            "outfiles_load": True,
+            "outfiles_load": False,
             "scratch_directory": scratch_directory,
             "environment": env,
+            "scratch_messy": True,
         }
 
+    """
     def parse_output(
-        self, mdp_file: str, output: Dict[str, str], inputs: Dict[str, Any]
-        ) -> GmxComputeInput
+        self, mdp_file: str, top_file:str, output: Dict[str, str], inputs: Dict[str, Any]
+        ) -> GmxComputeInput:
         stdout = output["stdout"]
         stderr = output["stderr"]
         outfiles = output["outfiles"]
 
-        if len(outfiles) == 3: # gro top itp
-            conf, top, _ = outfiles.values()  # posre = outfiles["posre.itp"]
-        elif len(outfiles) == 2:# gro top
-            conf, top = outfiles.values()
-        else:
-            raise ValueError(
-                "The number of output files should be either 2 (.gro, .top) or 3 (.gro, .top, .itp)"
-            )
+        mdp, top = mdp_file, top_file
+        conf = outfiles.values()
 
         return self.output()(
-            mdp_file = mdp_file,
             proc_input=inputs,
-            molecule=conf,
+            mdp_file = mdp,
             forcefield=top,
+            molecule=conf,
             stdout=stdout,
             stderr=stderr,
         )
-"""
+    """

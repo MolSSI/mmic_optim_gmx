@@ -51,8 +51,10 @@ class GmxComputeComponent(GenericComponent):
         }
 
         clean_files, cmd_input_grompp = self.build_input_grompp(input_model)
-        CmdComponent.compute(cmd_input_grompp)
+        rvalue = CmdComponent.compute(cmd_input_grompp)
         self.cleanup(clean_files)
+        tpr_file = str(rvalue.outfiles[tpr_file])
+        print(tpr_file)
 
         input_model = {"proc_input": proc_input, "tpr_file": tpr_file}
 
@@ -99,7 +101,7 @@ class GmxComputeComponent(GenericComponent):
         clean_files.append(inputs["gro_file"])
 
         cmd = [
-           # inputs["proc_input"].engine,
+            inputs["proc_input"].engine,
             "grompp",
             "-f",
             inputs["mdp_file"],
@@ -116,9 +118,10 @@ class GmxComputeComponent(GenericComponent):
             "command": cmd,
             "infiles": [inputs["mdp_file"], inputs["gro_file"], inputs["top_file"]],
             "outfiles": outfiles,
-            "outfiles_load": True,
+            "outfiles_load": False,
             "scratch_directory": scratch_directory,
             "environment": env,
+            "scratch_messy": True,
         }
 
     def build_input_mdrun(
@@ -127,6 +130,8 @@ class GmxComputeComponent(GenericComponent):
         config: Optional["TaskConfig"] = None,
         template: Optional[str] = None,
     ) -> Dict[str, Any]:
+
+        env = os.environ.copy()
 
         if config:
             env["MKL_NUM_THREADS"] = str(config.ncores)
@@ -145,7 +150,7 @@ class GmxComputeComponent(GenericComponent):
         clean_files = [log_file, edr_file, mdp_file]
 
         cmd = [
-           # inputs["proc_input"].engine,  # Should here be gmx_mpi?
+            inputs["proc_input"].engine,  # Should here be gmx_mpi?
             "mdrun",
             "-s",
             inputs["tpr_file"],
@@ -170,11 +175,12 @@ class GmxComputeComponent(GenericComponent):
 
         return clean_files, {
             "command": cmd,
-            "infiles": [inputs["tpr_file"]],
+            #"infiles": [inputs["tpr_file"]],
             "outfiles": outfiles,
-            "outfiles_load": True,
+            "outfiles_load": False,
             "scratch_directory": scratch_directory,
             "environment": env,
+            "scratch_messy": True,
         }
 
     def parse_output(
@@ -185,11 +191,15 @@ class GmxComputeComponent(GenericComponent):
         outfiles = output["outfiles"]
 
         traj, conf = outfiles.values()
+        traj = str(traj)
+        conf = str(conf)
+        print(traj)
+        print(conf)
 
         return self.output()(
             proc_input=inputs,
             molecule=conf,
             trajectory=traj,
-            stdout=stdout,
-            stderr=stderr,
+            #stdout=stdout,
+            #stderr=stderr,
         )
