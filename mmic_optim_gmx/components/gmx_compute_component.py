@@ -99,6 +99,7 @@ class GmxComputeComponent(GenericComponent):
         clean_files = []
         clean_files.append(inputs["mdp_file"])
         clean_files.append(inputs["gro_file"])
+        clean_files.append(inputs["top_file"])
 
         cmd = [
             inputs["proc_input"].engine,
@@ -175,7 +176,7 @@ class GmxComputeComponent(GenericComponent):
 
         return clean_files, {
             "command": cmd,
-            #"infiles": [inputs["tpr_file"]],
+            "as_binary": [inputs["tpr_file"]],
             "outfiles": outfiles,
             "outfiles_load": False,
             "scratch_directory": scratch_directory,
