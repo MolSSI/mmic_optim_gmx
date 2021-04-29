@@ -37,16 +37,20 @@ class GmxPostComponent(GenericComponent):
         """
 
         clean_files = []
-        """
         traj_file = inputs.trajectory  
-        traj_name = list(inputs.proc_input.trajectory)[0]
-        trajs_files = {traj_name: traj_file}
-        traj = {
+        if inputs.proc_input.trajectory == None:
+            traj_name = list(inputs.proc_input.molecule)[0]
+            traj = {traj_name: traj_file}
+        else:
+            traj_name = list(inputs.proc_input.trajectory)[0]
+            traj_files = {traj_name:traj_file}    
+            traj = {
             key: Trajectory.from_file(trajs_files[key])
             for key in inputs.proc_input.trajectory
-        }
+            }
         clean_files.append(traj_file)
-        """
+         
+
 
         mol_file = inputs.molecule
         mol_name = list(inputs.proc_input.molecule)[0]  
