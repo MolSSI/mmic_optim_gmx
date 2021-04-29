@@ -177,23 +177,3 @@ class GmxPreProcessComponent(GenericComponent):
             "scratch_messy": True,
         }
 
-    """
-    def parse_output(
-        self, mdp_file: str, top_file:str, output: Dict[str, str], inputs: Dict[str, Any]
-        ) -> GmxComputeInput:
-        stdout = output["stdout"]
-        stderr = output["stderr"]
-        outfiles = output["outfiles"]
-
-        mdp, top = mdp_file, top_file
-        conf = outfiles.values()
-
-        return self.output()(
-            proc_input=inputs,
-            mdp_file = mdp,
-            forcefield=top,
-            molecule=conf,
-            stdout=stdout,
-            stderr=stderr,
-        )
-    """
