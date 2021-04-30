@@ -58,6 +58,7 @@ class GmxComputeComponent(GenericComponent):
 
         input_model = {"proc_input": proc_input, "tpr_file": tpr_file}
 
+        clean_files = []
         clean_files, cmd_input_mdrun = self.build_input_mdrun(input_model)
         rvalue = CmdComponent.compute(cmd_input_mdrun)
         self.cleanup(clean_files)
@@ -201,6 +202,6 @@ class GmxComputeComponent(GenericComponent):
             proc_input=inputs,
             molecule=conf,
             trajectory=traj,
-            #stdout=stdout,
-            #stderr=stderr,
+            # stdout=stdout,
+            # stderr=stderr,
         )

@@ -176,4 +176,3 @@ class GmxPreProcessComponent(GenericComponent):
             "environment": env,
             "scratch_messy": True,
         }
-
