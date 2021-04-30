@@ -61,10 +61,6 @@ jobs:
 
     - name: Install the Dependencies
       run: |
-      git clone --single-branch https://github.com/Andrew-AbiMansour/QCEngine --branch execute 
-      cd QCEngine && python -m pip install . && cd .. && rm -rf QCEngine
-      git clone https://github.com/parmed/parmed
-      cd parmed && pip install . && cd .. && rm -rf parmed
       git clone https://github.com/MolSSI/mmic
       cd mmic && pip install . && cd .. && rm -rf mmic
       git clone https://github.com/MolSSI/mmic_translator
@@ -79,6 +75,8 @@ jobs:
       cd cmselemental && pip install . && cd .. && rm -rf cmselemental
       git clone https://github.com/RlyehAD/mmic_optim
       cd mmic_optim && pip install . && cd .. && rm -rf mmic_optim  
+      git clone https://github.com/MolSSI/mmic_cmd
+      cd mmic_cmd && pip install . && cd .. && rm -rf mmic_cmd 
 
     - name: Run tests
 
