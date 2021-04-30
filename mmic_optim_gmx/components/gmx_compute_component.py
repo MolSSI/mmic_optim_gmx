@@ -113,6 +113,8 @@ class GmxComputeComponent(GenericComponent):
             inputs["top_file"],
             "-o",
             tpr_file,
+            "-maxwarn",
+            "-1",
         ]
         outfiles = [tpr_file]
 
