@@ -25,7 +25,6 @@ def test_mmic_optim_gmx_imported():
     """Sample test, will always pass so long as import statement worked"""
     assert "mmic_optim_gmx" in sys.modules
 
-
 def test_preprocess_component():
     """
     This test reads the mol and ff files in data/ and
@@ -44,7 +43,7 @@ def test_preprocess_component():
         molecule={"mol": mol},
         forcefield={"mol": ff},
         boundary=("periodic", "periodic", "periodic"),
-        max_steps=1000,
+        max_steps=100,
         step_size=0.01,
         tol=1000,
         method="steepest descent",
@@ -75,6 +74,7 @@ def test_cleaner():
             ".edr",
             ".trr",
             ".err",
+            ".top",
         }:
             j = j + 1
 
