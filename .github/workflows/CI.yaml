@@ -59,6 +59,26 @@ jobs:
         python -m pip install . --no-deps
         conda list
 
+    - name: Install the Dependencies
+      run: |
+      git clone --single-branch https://github.com/Andrew-AbiMansour/QCEngine --branch execute 
+      cd QCEngine && python -m pip install . && cd .. && rm -rf QCEngine
+      git clone https://github.com/parmed/parmed
+      cd parmed && pip install . && cd .. && rm -rf parmed
+      git clone https://github.com/MolSSI/mmic
+      cd mmic && pip install . && cd .. && rm -rf mmic
+      git clone https://github.com/MolSSI/mmic_translator
+      cd mmic_translator && pip install . && cd .. && rm -rf mmic_translator
+      git clone https://github.com/MolSSI/MMElemental
+      cd MMElemental && pip install . && cd .. && rm -rf MMElemental
+      git clone https://github.com/MolSSI/mmic_parmed
+      cd mmic_parmed && pip install . && cd .. && rm -rf mmic_parmed
+      git clone https://github.com/MolSSI/mm_data
+      cd mm_data && pip install . && cd .. && rm -rf mm_data
+      git clone https://github.com/MolSSI/cmselemental --branch dev
+      cd cmselemental && pip install . && cd .. && rm -rf cmselemental
+      git clone https://github.com/RlyehAD/mmic_optim
+      cd mmic_optim && pip install . && cd .. && rm -rf mmic_optim  
 
     - name: Run tests
 
