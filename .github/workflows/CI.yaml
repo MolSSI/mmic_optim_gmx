@@ -64,22 +64,22 @@ jobs:
       # conda setup requires this special shell
       shell: bash -l {0}
       run: |
-      git clone https://github.com/MolSSI/mmic
-      cd mmic && pip install . && cd .. && rm -rf mmic
-      git clone https://github.com/MolSSI/mmic_translator
-      cd mmic_translator && pip install . && cd .. && rm -rf mmic_translator
-      git clone https://github.com/MolSSI/MMElemental
-      cd MMElemental && pip install . && cd .. && rm -rf MMElemental
-      git clone https://github.com/MolSSI/mmic_parmed
-      cd mmic_parmed && pip install . && cd .. && rm -rf mmic_parmed
-      git clone https://github.com/MolSSI/mm_data
-      cd mm_data && pip install . && cd .. && rm -rf mm_data
-      git clone https://github.com/MolSSI/cmselemental --branch dev
-      cd cmselemental && pip install . && cd .. && rm -rf cmselemental
-      git clone https://github.com/RlyehAD/mmic_optim
-      cd mmic_optim && pip install . && cd .. && rm -rf mmic_optim  
-      git clone https://github.com/MolSSI/mmic_cmd
-      cd mmic_cmd && pip install . && cd .. && rm -rf mmic_cmd 
+        git clone https://github.com/MolSSI/mmic
+        cd mmic && pip install . && cd .. && rm -rf mmic
+        git clone https://github.com/MolSSI/mmic_translator
+        cd mmic_translator && pip install . && cd .. && rm -rf mmic_translator
+        git clone https://github.com/MolSSI/MMElemental
+        cd MMElemental && pip install . && cd .. && rm -rf MMElemental
+        git clone https://github.com/MolSSI/mmic_parmed
+        cd mmic_parmed && pip install . && cd .. && rm -rf mmic_parmed
+        git clone https://github.com/MolSSI/mm_data
+        cd mm_data && pip install . && cd .. && rm -rf mm_data
+        git clone https://github.com/MolSSI/cmselemental --branch dev
+        cd cmselemental && pip install . && cd .. && rm -rf cmselemental
+        git clone https://github.com/RlyehAD/mmic_optim
+        cd mmic_optim && pip install . && cd .. && rm -rf mmic_optim  
+        git clone https://github.com/MolSSI/mmic_cmd
+        cd mmic_cmd && pip install . && cd .. && rm -rf mmic_cmd 
 
     - name: Run tests
 
