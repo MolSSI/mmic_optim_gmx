@@ -37,35 +37,34 @@ class GmxPostComponent(GenericComponent):
         """
 
         clean_files = []
-        traj_file = inputs.trajectory  
+        traj_file = inputs.trajectory
+        print(traj_file)
         if inputs.proc_input.trajectory == None:
             traj_name = list(inputs.proc_input.molecule)[0]
-            traj = {traj_name: traj_file}
+            traj = {traj_name: Trajectory.from_file(traj_file)}
         else:
             traj_name = list(inputs.proc_input.trajectory)[0]
-            traj_files = {traj_name:traj_file}    
+            traj_files = {traj_name: traj_file}
             traj = {
-            key: Trajectory.from_file(trajs_files[key])
-            for key in inputs.proc_input.trajectory
+                key: Trajectory.from_file(trajs_files[key])
+                for key in inputs.proc_input.trajectory
             }
         clean_files.append(traj_file)
-         
-
 
         mol_file = inputs.molecule
-        mol_name = list(inputs.proc_input.molecule)[0]  
-        mol_files = {mol_name: mol_file} 
+        print(mol_file)
+        mol_name = list(inputs.proc_input.molecule)[0]
+        mol_files = {mol_name: mol_file}
         mol = {
             key: Molecule.from_file(mol_files[key])
             for key in inputs.proc_input.molecule
-        }        
+        }
         clean_files.append(mol_file)
-
+        print(clean_files)
         self.cleanup(clean_files)
 
-
         return True, OptimOutput(
-            proc_input=inputs.proc_input, molecule=mol, #trajectory=traj
+            proc_input=inputs.proc_input, molecule=mol, trajectory=traj
         )
 
     @staticmethod
@@ -75,5 +74,3 @@ class GmxPostComponent(GenericComponent):
                 shutil.rmtree(item)
             elif os.path.isfile(item):
                 os.remove(item)
-
-
