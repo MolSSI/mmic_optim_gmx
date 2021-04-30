@@ -60,6 +60,9 @@ jobs:
         conda list
 
     - name: Install the Dependencies
+
+      # conda setup requires this special shell
+      shell: bash -l {0}
       run: |
       git clone https://github.com/MolSSI/mmic
       cd mmic && pip install . && cd .. && rm -rf mmic
