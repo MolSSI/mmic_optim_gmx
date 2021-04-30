@@ -23,7 +23,7 @@ class GmxComputeComponent(GenericComponent):
 
     def execute(
         self,
-        inputs: GmxComputeOutput,
+        inputs: GmxComputeInput,
         extra_outfiles: Optional[List[str]] = None,
         extra_commands: Optional[List[str]] = None,
         scratch_name: Optional[str] = None,
@@ -204,6 +204,6 @@ class GmxComputeComponent(GenericComponent):
             proc_input=inputs,
             molecule=conf,
             trajectory=traj,
-            # stdout=stdout,
-            # stderr=stderr,
+            #stdout=stdout,
+            #stderr=stderr,
         )
