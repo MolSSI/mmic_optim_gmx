@@ -14,10 +14,10 @@ dependencies:
   - pytest
   - pytest-cov
   - codecov
+  - mdanalysis
   
     # Pip-only installs
   - pip:
-    - mdanalysis
     - git+https://github.com/MolSSI/cmselemental.git@dev
     - git+https://github.com/parmed/parmed.git
     - git+https://github.com/MolSSI/mmic.git
