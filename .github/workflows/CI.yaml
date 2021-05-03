@@ -81,7 +81,7 @@ jobs:
         git clone https://github.com/MolSSI/mmic_cmd
         cd mmic_cmd && pip install . && cd .. && rm -rf mmic_cmd 
         git clone https://github.com/MolSSI/mmic_mda.git
-        cd mmic_mda && pip install . &&  python -m pip install -r requirements.txt && cd .. && rm -rf mmic_cmd
+        cd mmic_mda && pip install . && conda install --yes --file requirements.txt && cd .. && rm -rf mmic_cmd
 
     - name: Run tests
 
