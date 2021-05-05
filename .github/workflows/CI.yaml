@@ -82,6 +82,8 @@ jobs:
         cd mmic_cmd && pip install . && cd .. && rm -rf mmic_cmd 
         git clone https://github.com/MolSSI/mmic_mda.git
         cd mmic_mda && pip install . && conda install --yes --file requirements.txt && cd .. && rm -rf mmic_cmd
+        git clone https://github.com/andrew-abimansour/QCEngine.git
+        cd QCEngine && pip install . && cd .. && rm -rf mmic_cmd # This special version of qce will be replaced onece the PR is accepted.
 
     - name: Run tests
 
