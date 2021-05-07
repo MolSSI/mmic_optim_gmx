@@ -22,8 +22,8 @@ except:
 setup(
     # Self-descriptive entries which should always be present
     name="mmic_optim_gmx",
-    author="Andrew-Abi Mansour, Xu Guo",
-    author_email="andrewabimansour@vt.edu",
+    author="Xu Guo, Andrew-Abi Mansour",
+    author_email="guo12@iu.edu",
     description=short_description[0],
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -49,5 +49,5 @@ setup(
     #            'Windows'],            # Valid platforms your code works on, adjust to your flavor
     # python_requires=">=3.5",          # Python version restrictions
     # Manual control if final package is compressible or not, set False to prevent the .egg from being made
-    # zip_safe=False,
+    zip_safe=True,
 )
