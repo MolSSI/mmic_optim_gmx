@@ -204,6 +204,6 @@ class GmxComputeComponent(GenericComponent):
             proc_input=inputs,
             molecule=conf,
             trajectory=traj,
-            #stdout=stdout,
-            #stderr=stderr,
+            # stdout=stdout,
+            # stderr=stderr,
         )
