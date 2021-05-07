@@ -103,8 +103,8 @@ class GmxPreProcessComponent(GenericComponent):
         top_file = random_file(suffix=".top")
         boxed_gro_file = random_file(suffix=".gro")
 
-        mol.to_file(gro_file)
-        ff.to_file(top_file)
+        mol.to_file(gro_file, translator="mmic_parmed")
+        ff.to_file(top_file, translator="mmic_parmed")
 
         input_model = {
             "gro_file": gro_file,
@@ -113,8 +113,8 @@ class GmxPreProcessComponent(GenericComponent):
         }
         clean_files, cmd_input = self.build_input(input_model)
         rvalue = CmdComponent.compute(cmd_input)
+        print(rvalue)
         boxed_gro_file = str(rvalue.outfiles[boxed_gro_file])
-        print(boxed_gro_file)
         self.cleanup(clean_files)
 
         gmx_compute = GmxComputeInput(
@@ -171,7 +171,7 @@ class GmxPreProcessComponent(GenericComponent):
             "command": cmd,
             "infiles": [inputs["gro_file"]],
             "outfiles": outfiles,
-            "outfiles_load": False,
+            "outfiles_track": outfiles,
             "scratch_directory": scratch_directory,
             "environment": env,
             "scratch_messy": True,
