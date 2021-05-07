@@ -113,7 +113,6 @@ class GmxPreProcessComponent(GenericComponent):
         }
         clean_files, cmd_input = self.build_input(input_model)
         rvalue = CmdComponent.compute(cmd_input)
-        print(rvalue)
         boxed_gro_file = str(rvalue.outfiles[boxed_gro_file])
         self.cleanup(clean_files)
 
