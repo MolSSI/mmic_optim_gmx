@@ -26,5 +26,6 @@ dependencies:
     - git+https://github.com/MolSSI/mmic_translator.git
     - git+https://github.com/MolSSI/mmic_parmed.git
     - git+https://github.com/MolSSI/mmic_mda.git
+    - git+https://github.com/MolSSI/mmic_cmd.git
     - git+https://github.com/MolSSI/mm_data.git
     - git+https://github.com/Andrew-AbiMansour/qcengine@execute
