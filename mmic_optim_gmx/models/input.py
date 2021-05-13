@@ -2,7 +2,6 @@
 from mmelemental.models.proc.base import ProcInput
 from mmic_optim.models import OptimInput
 from pydantic import Field
-from typing import 
 
 __all__ = ["GmxComputeInput"]
 
