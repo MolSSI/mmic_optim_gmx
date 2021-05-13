@@ -4,13 +4,12 @@ from mmelemental.models import Molecule, Trajectory
 from ..models import GmxComputeOutput
 
 # Import components
-from mmic_cmd.components import CmdComponent
-from mmelemental.util.files import random_file
 from mmic.components.blueprints import GenericComponent
 
-from typing import Dict, Any, List, Tuple, Optional
+from typing import List, Tuple, Optional
 import os
 
+__all__ = ["GmxPostComponent"]
 
 class GmxPostComponent(GenericComponent):
     @classmethod
@@ -39,7 +38,7 @@ class GmxPostComponent(GenericComponent):
         clean_files = []
         traj_file = inputs.trajectory
         print(traj_file)
-        if inputs.proc_input.trajectory == None:
+        if inputs.proc_input.trajectory is None:
             traj_name = list(inputs.proc_input.molecule)[0]
             traj = {traj_name: Trajectory.from_file(traj_file)}
         else:
