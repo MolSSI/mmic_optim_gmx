@@ -1,6 +1,4 @@
 # Import models
-from mmelemental.models.util.output import FileOutput
-from mmelemental.models import Molecule, Trajectory
 from ..models import GmxComputeInput, GmxComputeOutput
 
 # Import components
@@ -11,6 +9,7 @@ from mmic.components.blueprints import GenericComponent
 from typing import Dict, Any, List, Tuple, Optional
 import os
 
+__all__ = ["GmxComputeComponent"]
 
 class GmxComputeComponent(GenericComponent):
     @classmethod
@@ -190,8 +189,8 @@ class GmxComputeComponent(GenericComponent):
     def parse_output(
         self, output: Dict[str, str], inputs: Dict[str, Any]
     ) -> GmxComputeInput:
-        stdout = output["stdout"]
-        stderr = output["stderr"]
+       #stdout = output["stdout"]
+       #stderr = output["stderr"]
         outfiles = output["outfiles"]
 
         traj, conf = outfiles.values()

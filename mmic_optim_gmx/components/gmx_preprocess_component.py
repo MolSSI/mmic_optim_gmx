@@ -1,14 +1,13 @@
 # Import models
 from mmic_optim.models.input import OptimInput
 from mmic_optim_gmx.models import GmxComputeInput
-from mmelemental.models.util import FileOutput
 from mmelemental.util.files import random_file
 
 # Import components
 from mmic_cmd.components import CmdComponent
 from mmic.components.blueprints import GenericComponent
 
-from typing import Any, Dict, List, Tuple, Optional, Set
+from typing import Any, Dict, List, Tuple, Optional
 import os
 
 __all__ = ["GmxPreProcessComponent"]
