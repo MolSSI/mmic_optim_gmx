@@ -11,6 +11,7 @@ import os
 
 __all__ = ["GmxPostComponent"]
 
+
 class GmxPostComponent(GenericComponent):
     @classmethod
     def input(cls):

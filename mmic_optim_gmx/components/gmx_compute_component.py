@@ -11,6 +11,7 @@ import os
 
 __all__ = ["GmxComputeComponent"]
 
+
 class GmxComputeComponent(GenericComponent):
     @classmethod
     def input(cls):
@@ -189,8 +190,8 @@ class GmxComputeComponent(GenericComponent):
     def parse_output(
         self, output: Dict[str, str], inputs: Dict[str, Any]
     ) -> GmxComputeInput:
-       #stdout = output["stdout"]
-       #stderr = output["stderr"]
+        # stdout = output["stdout"]
+        # stderr = output["stderr"]
         outfiles = output["outfiles"]
 
         traj, conf = outfiles.values()
