@@ -1,9 +1,10 @@
-from mmelemental.models.base import ProtoModel  # Is this line necessary?
+#from mmelemental.models.base import ProtoModel  # Is this line necessary?
 from mmelemental.models.proc.base import ProcInput
 from mmic_optim.models import OptimInput
 from pydantic import Field
-from typing import Optional
+from typing import 
 
+__all__ = ["GmxComputeInput"]
 
 class GmxComputeInput(ProcInput):
     proc_input: OptimInput = Field(..., description="Procedure input schema.")
