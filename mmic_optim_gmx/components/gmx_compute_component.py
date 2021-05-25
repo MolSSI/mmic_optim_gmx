@@ -8,6 +8,7 @@ from mmic.components.blueprints import GenericComponent
 
 from typing import Dict, Any, List, Tuple, Optional
 import os
+import shutil
 
 __all__ = ["GmxComputeComponent"]
 
@@ -50,11 +51,14 @@ class GmxComputeComponent(GenericComponent):
             "tpr_file": tpr_file,
         }
 
+        gro_dir = os.path.dirname(gro_file)
         clean_files, cmd_input_grompp = self.build_input_grompp(input_model)
         rvalue = CmdComponent.compute(cmd_input_grompp)
         self.cleanup(clean_files)
+        self.cleanup([gro_dir])
         tpr_file = str(rvalue.outfiles[tpr_file])
-        print(tpr_file)
+        tpr_dir = rvalue.scratch_directory
+        tpr_dir = str(tpr_dir)
 
         input_model = {"proc_input": proc_input, "tpr_file": tpr_file}
 
@@ -62,6 +66,7 @@ class GmxComputeComponent(GenericComponent):
         clean_files, cmd_input_mdrun = self.build_input_mdrun(input_model)
         rvalue = CmdComponent.compute(cmd_input_mdrun)
         self.cleanup(clean_files)
+        self.cleanup([tpr_dir])
 
         return True, self.parse_output(
             rvalue.dict(),
@@ -72,6 +77,7 @@ class GmxComputeComponent(GenericComponent):
     def cleanup(remove: List[str]):
         for item in remove:
             if os.path.isdir(item):
+                print(item)
                 shutil.rmtree(item)
             elif os.path.isfile(item):
                 os.remove(item)
@@ -197,8 +203,6 @@ class GmxComputeComponent(GenericComponent):
         traj, conf = outfiles.values()
         traj = str(traj)
         conf = str(conf)
-        print(traj)
-        print(conf)
 
         return self.output()(
             proc_input=inputs,
