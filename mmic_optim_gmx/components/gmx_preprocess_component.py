@@ -115,6 +115,7 @@ class GmxPreProcessComponent(GenericComponent):
         boxed_gro_file = str(rvalue.outfiles[boxed_gro_file])
         self.cleanup(clean_files)
 
+
         gmx_compute = GmxComputeInput(
             proc_input=inputs,
             mdp_file=mdp_file,
