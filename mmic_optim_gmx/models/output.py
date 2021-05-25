@@ -4,6 +4,7 @@ from pydantic import Field
 
 __all__ = ["GmxComputeOutput"]
 
+
 class GmxComputeOutput(ProtoModel):
     proc_input: OptimInput = Field(..., description="Procedure input schema.")
     molecule: str = Field(..., description="Molecule file string object")
