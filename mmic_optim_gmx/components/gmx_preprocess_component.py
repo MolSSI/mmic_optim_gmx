@@ -114,14 +114,14 @@ class GmxPreProcessComponent(GenericComponent):
         rvalue = CmdComponent.compute(cmd_input)
         boxed_gro_file = str(rvalue.outfiles[boxed_gro_file])
         scratch_dir = str(rvalue.scratch_directory)
-        self.cleanup(clean_files)# Del the gro in the working dir
+        self.cleanup(clean_files)  # Del the gro in the working dir
 
         gmx_compute = GmxComputeInput(
             proc_input=inputs,
             mdp_file=mdp_file,
             forcefield=top_file,
             molecule=boxed_gro_file,
-            scratch_dir = scratch_dir,
+            scratch_dir=scratch_dir,
         )
 
         return True, gmx_compute

@@ -54,11 +54,10 @@ class GmxComputeComponent(GenericComponent):
         gro_dir = os.path.dirname(gro_file)
         clean_files, cmd_input_grompp = self.build_input_grompp(input_model)
         rvalue = CmdComponent.compute(cmd_input_grompp)
-        self.cleanup(clean_files)# Del mdp and top file in the working dir
+        self.cleanup(clean_files)  # Del mdp and top file in the working dir
         self.cleanup([inputs.scratch_dir])
         tpr_file = str(rvalue.outfiles[tpr_file])
         tpr_dir = str(rvalue.scratch_directory)
- 
 
         input_model = {"proc_input": proc_input, "tpr_file": tpr_file}
         cmd_input_mdrun = self.build_input_mdrun(input_model)
