@@ -38,7 +38,6 @@ class GmxPostComponent(GenericComponent):
         """
 
         traj_file = inputs.trajectory
-        traj_dir = os.path.dirname(traj_file)
         if inputs.proc_input.trajectory is None:
             traj_name = list(inputs.proc_input.molecule)[0]
             traj = {traj_name: Trajectory.from_file(traj_file)}
