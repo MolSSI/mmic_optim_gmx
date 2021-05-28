@@ -54,18 +54,15 @@ class GmxComputeComponent(GenericComponent):
         gro_dir = os.path.dirname(gro_file)
         clean_files, cmd_input_grompp = self.build_input_grompp(input_model)
         rvalue = CmdComponent.compute(cmd_input_grompp)
-        self.cleanup(clean_files)
-        self.cleanup([gro_dir])
+        self.cleanup(clean_files)# Del mdp and top file in the working dir
+        self.cleanup([inputs.scratch_dir])
         tpr_file = str(rvalue.outfiles[tpr_file])
-        tpr_dir = rvalue.scratch_directory
-        tpr_dir = str(tpr_dir)
+        tpr_dir = str(rvalue.scratch_directory)
+ 
 
         input_model = {"proc_input": proc_input, "tpr_file": tpr_file}
-
-        clean_files = []
-        clean_files, cmd_input_mdrun = self.build_input_mdrun(input_model)
+        cmd_input_mdrun = self.build_input_mdrun(input_model)
         rvalue = CmdComponent.compute(cmd_input_mdrun)
-        self.cleanup(clean_files)
         self.cleanup([tpr_dir])
 
         return True, self.parse_output(
@@ -77,7 +74,6 @@ class GmxComputeComponent(GenericComponent):
     def cleanup(remove: List[str]):
         for item in remove:
             if os.path.isdir(item):
-                print(item)
                 shutil.rmtree(item)
             elif os.path.isfile(item):
                 os.remove(item)
@@ -105,7 +101,6 @@ class GmxComputeComponent(GenericComponent):
 
         clean_files = []
         clean_files.append(inputs["mdp_file"])
-        clean_files.append(inputs["gro_file"])
         clean_files.append(inputs["top_file"])
 
         cmd = [
@@ -155,9 +150,6 @@ class GmxComputeComponent(GenericComponent):
         trr_file = random_file(suffix=".trr")
         edr_file = random_file(suffix=".edr")
         gro_file = random_file(suffix=".gro")
-        mdp_file = "mdout.mdp"
-
-        clean_files = [log_file, edr_file, mdp_file]
 
         cmd = [
             inputs["proc_input"].engine,  # Should here be gmx_mpi?
@@ -183,7 +175,7 @@ class GmxComputeComponent(GenericComponent):
                 else:
                     cmd.extend([key])
 
-        return clean_files, {
+        return {
             "command": cmd,
             "as_binary": [inputs["tpr_file"]],
             "outfiles": outfiles,
@@ -199,6 +191,7 @@ class GmxComputeComponent(GenericComponent):
         # stdout = output["stdout"]
         # stderr = output["stderr"]
         outfiles = output["outfiles"]
+        scratch_dir = str(output["scratch_directory"])
 
         traj, conf = outfiles.values()
         traj = str(traj)
@@ -208,6 +201,7 @@ class GmxComputeComponent(GenericComponent):
             proc_input=inputs,
             molecule=conf,
             trajectory=traj,
+            scratch_dir=scratch_dir,
             # stdout=stdout,
             # stderr=stderr,
         )

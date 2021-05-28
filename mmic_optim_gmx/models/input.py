@@ -19,3 +19,8 @@ class GmxComputeInput(ProcInput):
         ...,
         description="The file of the coordinates of the atoms in the system. Should be a .gro file.",
     )
+    
+    scratch_dir: str = Field(
+        ...,
+        description="The path to the directory where the temporary files are written. Generally it's a directory in /tmp"
+    )
