@@ -51,7 +51,6 @@ class GmxComputeComponent(GenericComponent):
             "tpr_file": tpr_file,
         }
 
-        gro_dir = os.path.dirname(gro_file)
         clean_files, cmd_input_grompp = self.build_input_grompp(input_model)
         rvalue = CmdComponent.compute(cmd_input_grompp)
         self.cleanup(clean_files)  # Del mdp and top file in the working dir
@@ -142,8 +141,6 @@ class GmxComputeComponent(GenericComponent):
             env["OMP_NUM_THREADS"] = str(config.ncores)
 
         scratch_directory = config.scratch_directory if config else None
-
-        clean_files = []
 
         log_file = random_file(suffix=".log")
         trr_file = random_file(suffix=".trr")
