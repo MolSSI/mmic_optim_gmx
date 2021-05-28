@@ -37,7 +37,6 @@ class GmxPostComponent(GenericComponent):
         be applied to single molecule conditions
         """
 
-        clean_files = []
         traj_file = inputs.trajectory
         traj_dir = os.path.dirname(traj_file)
         if inputs.proc_input.trajectory is None:
@@ -50,7 +49,6 @@ class GmxPostComponent(GenericComponent):
                 key: Trajectory.from_file(trajs_files[key])
                 for key in inputs.proc_input.trajectory
             }
-        clean_files.append(traj_file)
 
         mol_file = inputs.molecule
         mol_name = list(inputs.proc_input.molecule)[0]
@@ -59,10 +57,7 @@ class GmxPostComponent(GenericComponent):
             key: Molecule.from_file(mol_files[key])
             for key in inputs.proc_input.molecule
         }
-        clean_files.append(mol_file)
-        print(clean_files)
-        self.cleanup(clean_files)
-        self.cleanup([traj_dir])
+        self.cleanup([inputs.scratch_dir])
 
         return True, OptimOutput(
             proc_input=inputs.proc_input, molecule=mol, trajectory=traj
