@@ -4,7 +4,6 @@ A short description of the project.
 """
 
 # Add imports here
-from .mmic_optim_gmx import *
 
 # Handle versioneer
 from ._version import get_versions
