@@ -103,7 +103,7 @@ class GmxPreProcessComponent(GenericComponent):
         boxed_gro_file = random_file(suffix=".gro")
 
         mol.to_file(gro_file, translator="mmic_parmed")
-        ff.to_file(top_file, dtype = "top", translator="mmic_parmed")
+        ff.to_file(top_file, dtype="top", translator="mmic_parmed")
 
         input_model = {
             "gro_file": gro_file,
