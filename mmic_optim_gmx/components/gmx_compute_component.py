@@ -1,5 +1,5 @@
 # Import models
-from ..models import GmxComputeInput, GmxComputeOutput
+from ..models import ComputeGmxInput, ComputeGmxOutput
 
 # Import components
 from mmic_cmd.components import CmdComponent
@@ -10,26 +10,26 @@ from typing import Dict, Any, List, Tuple, Optional
 import os
 import shutil
 
-__all__ = ["GmxComputeComponent"]
+__all__ = ["ComputeGmxComponent"]
 
 
-class GmxComputeComponent(GenericComponent):
+class ComputeGmxComponent(GenericComponent):
     @classmethod
     def input(cls):
-        return GmxComputeInput
+        return ComputeGmxInput
 
     @classmethod
     def output(cls):
-        return GmxComputeOutput
+        return ComputeGmxOutput
 
     def execute(
         self,
-        inputs: GmxComputeInput,
+        inputs: ComputeGmxInput,
         extra_outfiles: Optional[List[str]] = None,
         extra_commands: Optional[List[str]] = None,
         scratch_name: Optional[str] = None,
         timeout: Optional[int] = None,
-    ) -> Tuple[bool, GmxComputeOutput]:
+    ) -> Tuple[bool, ComputeGmxOutput]:
 
         # Call gmx pdb2gmx, mdrun, etc. here
         if isinstance(inputs, dict):
@@ -183,7 +183,7 @@ class GmxComputeComponent(GenericComponent):
 
     def parse_output(
         self, output: Dict[str, str], inputs: Dict[str, Any]
-    ) -> GmxComputeInput:
+    ) -> ComputeGmxInput:
         # stdout = output["stdout"]
         # stderr = output["stderr"]
         outfiles = output["outfiles"]
