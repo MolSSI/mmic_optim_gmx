@@ -3,10 +3,12 @@ from mmelemental.models.proc.base import ProcInput
 from mmic_optim.models import OptimInput
 from pydantic import Field
 
-__all__ = ["GmxComputeInput"]
 
 
-class GmxComputeInput(ProcInput):
+__all__ = ["ComputeGmxInput"]
+
+
+class ComputeGmxInput(ProcInput):
     proc_input: OptimInput = Field(..., description="Procedure input schema.")
     mdp_file: str = Field(
         ...,
