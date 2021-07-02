@@ -4,7 +4,6 @@ from mmic_optim.models import OptimInput
 from pydantic import Field
 
 
-
 __all__ = ["ComputeGmxInput"]
 
 

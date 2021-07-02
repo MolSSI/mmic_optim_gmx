@@ -176,4 +176,3 @@ class PrepGmxComponent(GenericComponent):
             "environment": env,
             "scratch_messy": True,
         }
-
