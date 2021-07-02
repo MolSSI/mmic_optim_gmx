@@ -9,15 +9,10 @@ from mmic_optim import OptimInput, OptimOutput
 from mmelemental.models import Molecule, Trajectory, ForceField
 import mmic_optim_gmx
 
-from mmic_optim_gmx.components import (
-    gmx_preprocess_component,
-    gmx_compute_component,
-    gmx_post_component,
-)
+from mmic_optim_gmx.components import OptimGmxComponent
 
 import mm_data
 import pytest
-import json
 import sys
 import os
 
@@ -40,20 +35,27 @@ def test_preprocess_component():
     # ff = mmelemental.models.ForceField.from_file("temp.json")
     # traj = Trajectory.from_file(traj_file)
 
-    pre_inputs = OptimInput(
+    inputs = OptimInput(
         engine="gmx",  # This is important
         molecule={"mol": mol},
         forcefield={"mol": ff},
-        boundary=("periodic", "periodic", "periodic"),
+        boundary=(
+            "periodic",
+            "periodic",
+            "periodic",
+            "periodic",
+            "periodic",
+            "periodic",
+        ),
         max_steps=10,
         step_size=0.01,
         tol=1000,
         method="steepest descent",
+        long_forces={"method": "PME"},
+        short_forces={"method": "cutoff"},
     )
 
-    em_input = gmx_preprocess_component.GmxPreProcessComponent.compute(pre_inputs)
-    em_output = gmx_compute_component.GmxComputeComponent.compute(em_input)
-    final_output = gmx_post_component.GmxPostComponent.compute(em_output)
+    outputs = OptimGmxComponent.compute(inputs)
 
 
 def test_cleaner():
