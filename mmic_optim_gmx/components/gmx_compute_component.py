@@ -165,8 +165,8 @@ class ComputeGmxComponent(GenericComponent):
         outfiles = [trr_file, gro_file]
 
         # For extra args
-        if inputs["proc_input"].kwargs:
-            for key, val in inputs["proc_input"].kwargs.items():
+        if inputs["proc_input"].keywords:
+            for key, val in inputs["proc_input"].keywords.items():
                 if val:
                     cmd.extend([key, val])
                 else:
@@ -184,7 +184,7 @@ class ComputeGmxComponent(GenericComponent):
 
     def parse_output(
         self, output: Dict[str, str], inputs: Dict[str, Any]
-    ) -> ComputeGmxInput:
+    ) -> ComputeGmxInput:   
         # stdout = output["stdout"]
         # stderr = output["stderr"]
         outfiles = output["outfiles"]

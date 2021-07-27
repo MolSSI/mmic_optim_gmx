@@ -60,7 +60,8 @@ class PostGmxComponent(GenericComponent):
         self.cleanup([inputs.scratch_dir])
 
         return True, OptimOutput(
-            proc_input=inputs.proc_input, molecule=mol, trajectory=traj
+            proc_input=inputs.proc_input, molecule=mol, trajectory=traj,
+            schema_name="test", schema_version=1.0, success=True,
         )
 
     @staticmethod
