@@ -184,7 +184,7 @@ class ComputeGmxComponent(GenericComponent):
 
     def parse_output(
         self, output: Dict[str, str], inputs: Dict[str, Any]
-    ) -> ComputeGmxInput:   
+    ) -> ComputeGmxInput:
         # stdout = output["stdout"]
         # stderr = output["stderr"]
         outfiles = output["outfiles"]
