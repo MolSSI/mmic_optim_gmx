@@ -1,4 +1,3 @@
-# from mmelemental.models.base import ProtoModel
 from cmselemental.models.base import ProtoModel
 from mmic_optim.models import OptimInput
 from pydantic import Field
