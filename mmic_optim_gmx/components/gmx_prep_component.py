@@ -118,8 +118,8 @@ class PrepGmxComponent(GenericComponent):
 
         gmx_compute = ComputeGmxInput(
             proc_input=inputs,
-            schema_name="test",
-            schema_version=1.0,
+            schema_name=inputs.schema_name,
+            schema_version=inputs.schema_version,
             mdp_file=mdp_file,
             forcefield=top_file,
             molecule=boxed_gro_file,

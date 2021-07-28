@@ -63,8 +63,8 @@ class PostGmxComponent(GenericComponent):
             proc_input=inputs.proc_input,
             molecule=mol,
             trajectory=traj,
-            schema_name="test",
-            schema_version=1.0,
+            schema_name=inputs.proc_input.schema_name,
+            schema_version=inputs.proc_input.schema_version,
             success=True,
         )
 
