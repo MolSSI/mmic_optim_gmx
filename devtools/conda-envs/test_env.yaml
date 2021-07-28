@@ -11,7 +11,9 @@ dependencies:
   - pip
   - gromacs
     # Testing
+  - codecov
   - pytest
+  - pytest-cov
   - mdanalysis
   
     # Pip-only installs
