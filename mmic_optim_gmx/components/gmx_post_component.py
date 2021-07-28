@@ -10,6 +10,7 @@ from typing import List, Tuple, Optional
 import os
 import shutil
 
+
 __all__ = ["PostGmxComponent"]
 
 
@@ -59,7 +60,12 @@ class PostGmxComponent(GenericComponent):
         self.cleanup([inputs.scratch_dir])
 
         return True, OptimOutput(
-            proc_input=inputs.proc_input, molecule=mol, trajectory=traj
+            proc_input=inputs.proc_input,
+            molecule=mol,
+            trajectory=traj,
+            schema_name=inputs.proc_input.schema_name,
+            schema_version=inputs.proc_input.schema_version,
+            success=True,
         )
 
     @staticmethod

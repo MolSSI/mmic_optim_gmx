@@ -1,7 +1,7 @@
-# from mmelemental.models.base import ProtoModel  # Is this line necessary?
-from mmelemental.models.proc.base import ProcInput
+from cmselemental.models.procedures import ProcInput
 from mmic_optim.models import OptimInput
 from pydantic import Field
+
 
 __all__ = ["ComputeGmxInput"]
 

@@ -37,6 +37,8 @@ def test_preprocess_component():
 
     inputs = OptimInput(
         engine="gmx",  # This is important
+        schema_name="test",
+        schema_version=1.0,
         molecule={"mol": mol},
         forcefield={"mol": ff},
         boundary=(
@@ -47,6 +49,7 @@ def test_preprocess_component():
             "periodic",
             "periodic",
         ),
+        cell=(0, 0, 0, 1, 1, 1),
         max_steps=10,
         step_size=0.01,
         tol=1000,
