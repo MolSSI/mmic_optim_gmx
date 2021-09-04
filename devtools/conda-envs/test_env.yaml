@@ -9,7 +9,7 @@ dependencies:
     # Base depends
   - python
   - pip
-  - gromacs
+    #- gromacs
     # Testing
   - codecov
   - pytest
@@ -18,7 +18,7 @@ dependencies:
   
     # Pip-only installs
   - pip:
-    - cmselemental
+    - git+https://github.com/MolSSI/cmselemental.git 
     - git+https://github.com/parmed/parmed.git
     - mmic
     - git+https://github.com/MolSSI/mmic_optim.git
