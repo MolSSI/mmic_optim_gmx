@@ -6,21 +6,19 @@ channels:
   - defaults
   
 dependencies:
-    # Base depends
   - python
   - pip
-    #- gromacs
-    # Testing
-  - codecov
-  - pytest
-  - pytest-cov
+  - gromacs
   - mdanalysis
   
     # Pip-only installs
   - pip:
-    - git+https://github.com/MolSSI/cmselemental.git 
-    - git+https://github.com/parmed/parmed.git
+    - codecov
+    - pytest
+    - pytest-cov
+    - git+https://github.com/MolSSI/cmselemental@v0.2.0
     - mmic
+    - git+https://github.com/parmed/parmed.git
     - git+https://github.com/MolSSI/mmic_optim.git
     - git+https://github.com/MolSSI/mmelemental.git
     - git+https://github.com/MolSSI/mmic_translator.git
