@@ -16,7 +16,7 @@ dependencies:
     - codecov
     - pytest
     - pytest-cov
-    - git+https://github.com/MolSSI/cmselemental@v0.2.0
+    - git+https://github.com/MolSSI/cmselemental.git
     - mmic
     - git+https://github.com/parmed/parmed.git
     - git+https://github.com/MolSSI/mmic_optim.git
