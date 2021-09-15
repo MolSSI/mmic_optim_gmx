@@ -3,10 +3,11 @@ from ..models import ComputeGmxInput, ComputeGmxOutput
 
 # Import components
 from mmic_cmd.components import CmdComponent
-from mmelemental.util.files import random_file
+from cmselemental.util.files import random_file
 from mmic.components.blueprints import GenericComponent
 
 from typing import Dict, Any, List, Tuple, Optional
+from pathlib import Path
 import os
 import shutil
 
@@ -44,6 +45,8 @@ class ComputeGmxComponent(GenericComponent):
         )
 
         tpr_file = random_file(suffix=".tpr")
+
+
         input_model = {
             "proc_input": proc_input,
             "mdp_file": mdp_file,
@@ -56,18 +59,15 @@ class ComputeGmxComponent(GenericComponent):
         rvalue = CmdComponent.compute(cmd_input_grompp)
         self.cleanup(clean_files)  # Del mdp and top file in the working dir
         self.cleanup([inputs.scratch_dir])
-        tpr_file = str(rvalue.outfiles[tpr_file])
         tpr_dir = str(rvalue.scratch_directory)
 
         input_model = {"proc_input": proc_input, "tpr_file": tpr_file}
         cmd_input_mdrun = self.build_input_mdrun(input_model)
         rvalue = CmdComponent.compute(cmd_input_mdrun)
+        self.cleanup([tpr_file, gro_file])
         self.cleanup([tpr_dir])
 
-        return True, self.parse_output(
-            rvalue.dict(),
-            proc_input,
-        )
+        return True, self.parse_output(rvalue.dict(), proc_input)
 
     @staticmethod
     def cleanup(remove: List[str]):
@@ -118,15 +118,18 @@ class ComputeGmxComponent(GenericComponent):
         ]
         outfiles = [tpr_file]
 
-        return clean_files, {
-            "command": cmd,
-            "infiles": [inputs["mdp_file"], inputs["gro_file"], inputs["top_file"]],
-            "outfiles": outfiles,
-            "outfiles_track": outfiles,
-            "scratch_directory": scratch_directory,
-            "environment": env,
-            "scratch_messy": True,
-        }
+        return (
+            clean_files,
+            {
+                "command": cmd,
+                "infiles": [inputs["mdp_file"], inputs["gro_file"], inputs["top_file"]],
+                "outfiles": [Path(file).name for file in outfiles],
+                "outfiles_track": [Path(file).name for file in outfiles],
+                "scratch_directory": scratch_directory,
+                "environment": env,
+                "scratch_messy": True,
+            },
+        )
 
     def build_input_mdrun(
         self,
@@ -143,26 +146,29 @@ class ComputeGmxComponent(GenericComponent):
 
         scratch_directory = config.scratch_directory if config else None
 
-        log_file = random_file(suffix=".log")
-        trr_file = random_file(suffix=".trr")
-        edr_file = random_file(suffix=".edr")
-        gro_file = random_file(suffix=".gro")
+        log_fname = Path(random_file(suffix=".log")).name
+        trr_fname = Path(random_file(suffix=".trr")).name
+        edr_fname = Path(random_file(suffix=".edr")).name
+        gro_fname = Path(random_file(suffix=".gro")).name
+
+        tpr_file = inputs["tpr_file"]
 
         cmd = [
             inputs["proc_input"].engine,  # Should here be gmx_mpi?
             "mdrun",
             "-s",
-            inputs["tpr_file"],
+            tpr_file,
             "-o",
-            trr_file,
+            trr_fname,
             "-c",
-            gro_file,
+            gro_fname,
             "-e",
-            edr_file,
+            edr_fname,
             "-g",
-            log_file,
+            log_fname,
         ]
-        outfiles = [trr_file, gro_file]
+        
+        outfiles = [trr_fname, gro_fname, edr_fname, log_fname]
 
         # For extra args
         if inputs["proc_input"].keywords:
@@ -174,7 +180,8 @@ class ComputeGmxComponent(GenericComponent):
 
         return {
             "command": cmd,
-            "as_binary": [inputs["tpr_file"]],
+            "as_binary": [Path(tpr_file).name],
+            "infiles": [tpr_file],
             "outfiles": outfiles,
             "outfiles_track": outfiles,
             "scratch_directory": scratch_directory,
@@ -190,14 +197,12 @@ class ComputeGmxComponent(GenericComponent):
         outfiles = output["outfiles"]
         scratch_dir = str(output["scratch_directory"])
 
-        traj, conf = outfiles.values()
-        traj = str(traj)
-        conf = str(conf)
+        traj, conf, energy, log = outfiles.values()
 
         return self.output()(
             proc_input=inputs,
-            molecule=conf,
-            trajectory=traj,
+            molecule=str(conf),
+            trajectory=str(traj),
             scratch_dir=scratch_dir,
             # stdout=stdout,
             # stderr=stderr,
