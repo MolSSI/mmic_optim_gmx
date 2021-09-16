@@ -53,4 +53,4 @@ class OptimGmxComponent(TacticComponent):
         -------
         Any
         """
-        return set(mmic_optim.components.OptimComponent)
+        return {"mmic_optim"}
