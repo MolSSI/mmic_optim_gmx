@@ -5,7 +5,7 @@
 
 mmic_optim_gmx
 ================
-This is part of the [MolSSI](http://molssi.org) Molecular Mechanics Interoperable Components ([MMIC](https://github.com/MolSSI/mmic)) project. This package provides a tactic component for [mmic_optim](https://github.com/MolSSI/mmic_optim) using the [Gromacs](gromacs.org) software suite.
+This is part of the [MolSSI](https://molssi.org) Molecular Mechanics Interoperable Components ([MMIC](https://github.com/MolSSI/mmic)) project. This package provides a tactic component for [mmic_optim](https://github.com/MolSSI/mmic_optim) using the [Gromacs](https://gromacs.org) software suite.
 
 
 ### Copyright
