@@ -47,10 +47,10 @@ class OptimGmxComponent(TacticComponent):
         raise NotImplementedError
 
     @classmethod
-    def strategy_comp(cls) -> Any:
+    def strategy_comps(cls) -> Any:
         """Returns the strategy component this (tactic) component belongs to.
         Returns
         -------
         Any
         """
-        return set(mmic_optim.components.OptimComponent)
+        return {"mmic_optim"}

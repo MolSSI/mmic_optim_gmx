@@ -1,13 +1,14 @@
 # Import models
 from mmic_optim.models.input import OptimInput
 from mmic_optim_gmx.models import ComputeGmxInput
-from mmelemental.util.files import random_file
+from cmselemental.util.files import random_file
 
 # Import components
 from mmic_cmd.components import CmdComponent
 from mmic.components.blueprints import GenericComponent
 
 from typing import Any, Dict, List, Tuple, Optional
+from pathlib import Path
 import os
 
 __all__ = ["PrepGmxComponent"]
@@ -112,7 +113,8 @@ class PrepGmxComponent(GenericComponent):
         }
         clean_files, cmd_input = self.build_input(input_model)
         rvalue = CmdComponent.compute(cmd_input)
-        boxed_gro_file = str(rvalue.outfiles[boxed_gro_file])
+
+        ###boxed_gro_file = str(rvalue.outfiles[boxed_gro_file])
         scratch_dir = str(rvalue.scratch_directory)
         self.cleanup(clean_files)  # Del the gro in the working dir
 
@@ -169,12 +171,15 @@ class PrepGmxComponent(GenericComponent):
         ]
         outfiles = [boxed_gro_file]
 
-        return clean_files, {
-            "command": cmd,
-            "infiles": [inputs["gro_file"]],
-            "outfiles": outfiles,
-            "outfiles_track": outfiles,
-            "scratch_directory": scratch_directory,
-            "environment": env,
-            "scratch_messy": True,
-        }
+        return (
+            clean_files,
+            {
+                "command": cmd,
+                "infiles": [inputs["gro_file"]],
+                "outfiles": [Path(file).name for file in outfiles],
+                "outfiles_track": [Path(file).name for file in outfiles],
+                "scratch_directory": scratch_directory,
+                "environment": env,
+                "scratch_messy": True,
+            },
+        )
