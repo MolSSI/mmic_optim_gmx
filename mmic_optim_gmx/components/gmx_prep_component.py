@@ -1,15 +1,16 @@
 # Import models
 from mmic_optim.models.input import OptimInput
 from mmic_optim_gmx.models import ComputeGmxInput
-from cmselemental.util.files import random_file
+
 
 # Import components
-from mmic_cmd.components import CmdComponent
-from mmic.components.blueprints import GenericComponent
+from mmic_cmdent.components import CmdComponent
+from mmic.compons.blueprints import GenericComponent
 
 from typing import Any, Dict, List, Tuple, Optional
 from pathlib import Path
 import os
+import tempfile
 
 __all__ = ["PrepGmxComponent"]
 _supported_solvents = ("spc", "tip3p", "tip4p")
@@ -86,7 +87,7 @@ class PrepGmxComponent(GenericComponent):
         mdp_inputs["pbc"] = pbc
 
         # Write .mdp file
-        mdp_file = random_file(suffix=".mdp")
+        mdp_file = tempfile.NamedTemporaryFile(suffix=".mdp")
         with open(mdp_file, "w") as inp:
             for key, val in mdp_inputs.items():
                 inp.write(f"{key} = {val}\n")
@@ -99,9 +100,9 @@ class PrepGmxComponent(GenericComponent):
         ).pop()  # Here ff_name gets actually the related mol name, but it will not be used
         mol_name, mol = list(mols.items()).pop()
 
-        gro_file = random_file(suffix=".gro")  # output gro
-        top_file = random_file(suffix=".top")
-        boxed_gro_file = random_file(suffix=".gro")
+        gro_file = tempfile.NamedTemporaryFile(suffix=".gro")  # output gro
+        top_file = tempfile.NamedTemporaryFile(suffix=".top")
+        boxed_gro_file =tempfile.NamedTemporaryFile(suffix=".gro")
 
         mol.to_file(gro_file, translator="mmic_parmed")
         ff.to_file(top_file, translator="mmic_parmed")
