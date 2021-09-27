@@ -46,7 +46,6 @@ class ComputeGmxComponent(GenericComponent):
 
         tpr_file = tempfile.NamedTemporaryFile(suffix=".tpr")
 
-
         input_model = {
             "proc_input": proc_input,
             "mdp_file": mdp_file,
@@ -167,7 +166,7 @@ class ComputeGmxComponent(GenericComponent):
             "-g",
             log_fname,
         ]
-        
+
         outfiles = [trr_fname, gro_fname, edr_fname, log_fname]
 
         # For extra args
