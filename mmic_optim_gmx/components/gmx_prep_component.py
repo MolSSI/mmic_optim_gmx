@@ -4,7 +4,7 @@ from mmic_optim_gmx.models import ComputeGmxInput
 
 
 # Import components
-from mmic_cmdent.components import CmdComponent
+from mmic_cmd.components import CmdComponent
 from mmic.compons.blueprints import GenericComponent
 
 from typing import Any, Dict, List, Tuple, Optional
